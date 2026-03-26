@@ -6,10 +6,10 @@
 #include "imgui-SFML.h"
 
 int main() {
-    std::cout << "SFML Version: "
-                  << SFML_VERSION_MAJOR << "."
-                  << SFML_VERSION_MINOR << "."
-                  << SFML_VERSION_PATCH << std::endl;
+    std::cout << "--- Version Check ---" << std::endl;
+    std::cout << "SFML: " << SFML_VERSION_MAJOR << "." << SFML_VERSION_MINOR << "." << SFML_VERSION_PATCH << std::endl;
+    std::cout << "ImGui: " << IMGUI_VERSION << std::endl;
+    std::cout << "---------------------" << std::endl;
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Pop_OS ImGui + SFML");
     window.setFramerateLimit(60);
 
