@@ -15,6 +15,7 @@ find_package(OpenCV REQUIRED)
 # 2. Define the paths to your manually added ImGui files
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui")
 set(IMGUI_SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui-sfml")
+set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # 3. Collect the ImGui source files to be compiled into your binary
 set(IMGUI_SOURCES
@@ -28,8 +29,12 @@ set(IMGUI_SOURCES
 # 4. Create the executable including both your code and ImGui's code
 add_executable(
     watershed_app
-    src/Main.cpp
     ${IMGUI_SOURCES}
+    src/Main.cpp
+    src/controller/Controller.cpp
+    src/model/AppData.cpp
+    src/service/ImageService.cpp
+    src/service/ImageLoader.cpp
 )
 
 # 5. Tell the compiler where to find the .h headers
@@ -37,6 +42,7 @@ target_include_directories(watershed_app PUBLIC
     ${IMGUI_DIR}
     ${IMGUI_SFML_DIR}
     ${OpenCV_INCLUDE_DIRS}
+    ${INCLUDE_DIR}
 )
 
 # 6. Link against system SFML and OpenGL
