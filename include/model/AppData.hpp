@@ -11,6 +11,7 @@ class AppData final {
         sf::Texture mSegmentedTexture;
         bool mServiceIsProcessing;
 
+
     public:
         const cv::Mat& getOriginalMatrix() const { return mOriginalMatrix; }
         const cv::Mat& getSegmentedMatrix() const { return mSegmentedMatrix; }
