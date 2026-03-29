@@ -13,13 +13,8 @@ int main() {
     std::cout << "--- Version Check ---" << std::endl;
     std::cout << "SFML: " << SFML_VERSION_MAJOR << "." << SFML_VERSION_MINOR << "." << SFML_VERSION_PATCH << std::endl;
     std::cout << "ImGui: " << IMGUI_VERSION << std::endl;
-    // --- NEW: OpenCV Version Check ---
     std::cout << "OpenCV: " << CV_VERSION << std::endl;
     std::cout << "---------------------" << std::endl;
-
-    // Verify OpenCV functionality: Create a 100x100 matrix
-    cv::Mat testMat = cv::Mat::zeros(100, 100, CV_8UC3);
-    std::cout << "OpenCV Matrix created successfully: " << testMat.cols << "x" << testMat.rows << std::endl;
 
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Pop_OS ImGui + SFML + OpenCV");
     window.setFramerateLimit(60);
