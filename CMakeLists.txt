@@ -31,7 +31,7 @@ add_executable(
     watershed_app
     ${IMGUI_SOURCES}
     src/Main.cpp
-    src/controller/ImageController.cpp
+    src/controller/Controller.cpp
     src/model/AppData.cpp
     src/service/ImageService.cpp
     src/service/ImageLoader.cpp
