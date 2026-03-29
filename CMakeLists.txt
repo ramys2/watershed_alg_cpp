@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # This looks for the shared libraries in /usr/lib/x86_64-linux-gnu/
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
+find_package(OpenCV REQUIRED)
+
 # 2. Define the paths to your manually added ImGui files
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui")
 set(IMGUI_SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui-sfml")
@@ -34,6 +36,7 @@ add_executable(
 target_include_directories(watershed_app PUBLIC
     ${IMGUI_DIR}
     ${IMGUI_SFML_DIR}
+    ${OpenCV_INCLUDE_DIRS}
 )
 
 # 6. Link against system SFML and OpenGL
@@ -45,4 +48,5 @@ target_link_libraries(
     sfml-window
     sfml-system
     GL
+    ${OpenCV_LIBS}
 )

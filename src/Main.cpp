@@ -2,6 +2,10 @@
 #include <SFML/Config.hpp>
 #include <iostream>
 
+// --- NEW: OpenCV Headers ---
+#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
+
 #include "imgui.h"
 #include "imgui-SFML.h"
 
@@ -9,8 +13,15 @@ int main() {
     std::cout << "--- Version Check ---" << std::endl;
     std::cout << "SFML: " << SFML_VERSION_MAJOR << "." << SFML_VERSION_MINOR << "." << SFML_VERSION_PATCH << std::endl;
     std::cout << "ImGui: " << IMGUI_VERSION << std::endl;
+    // --- NEW: OpenCV Version Check ---
+    std::cout << "OpenCV: " << CV_VERSION << std::endl;
     std::cout << "---------------------" << std::endl;
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "Pop_OS ImGui + SFML");
+
+    // Verify OpenCV functionality: Create a 100x100 matrix
+    cv::Mat testMat = cv::Mat::zeros(100, 100, CV_8UC3);
+    std::cout << "OpenCV Matrix created successfully: " << testMat.cols << "x" << testMat.rows << std::endl;
+
+    sf::RenderWindow window(sf::VideoMode(1280, 720), "Pop_OS ImGui + SFML + OpenCV");
     window.setFramerateLimit(60);
 
     if (!ImGui::SFML::Init(window)) return -1;
@@ -26,7 +37,10 @@ int main() {
         ImGui::SFML::Update(window, deltaClock.restart());
 
         ImGui::Begin("Hello, Pop_OS!");
-        ImGui::Button("Look at me, I'm a button!");
+        ImGui::Text("OpenCV Version: %s", CV_VERSION); // Display version in UI
+        if (ImGui::Button("Click to print OpenCV info")) {
+            std::cout << "OpenCV is linked and responding!" << std::endl;
+        }
         ImGui::End();
 
         window.clear();
