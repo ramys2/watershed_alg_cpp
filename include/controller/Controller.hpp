@@ -18,5 +18,6 @@ class Controller final {
         void loadImage(const std::string& pathToImg);
         void runWatershedSegmentation();
         void runCvWatershedSegmentation();
+        void update();
 
 };
