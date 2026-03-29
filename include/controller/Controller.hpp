@@ -15,9 +15,13 @@ class Controller final {
         std::future<cv::Mat> mTaskThread;
 
     public:
+        // Invokes service to load image
         void loadImage(const std::string& pathToImg);
+        // Invokes service to run manual implementation of watershed
         void runWatershedSegmentation();
+        // Invokes service to run opencv implementation of watershed
         void runCvWatershedSegmentation();
+        // Polls for result when segmentation is running
         void update();
 
 };
