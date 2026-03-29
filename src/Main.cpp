@@ -2,12 +2,12 @@
 #include <SFML/Config.hpp>
 #include <iostream>
 
-// --- NEW: OpenCV Headers ---
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include "controller/Controller.hpp"
 
 int main() {
     std::cout << "--- Version Check ---" << std::endl;
@@ -22,6 +22,7 @@ int main() {
     if (!ImGui::SFML::Init(window)) return -1;
 
     sf::Clock deltaClock;
+    Controller controller;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -31,10 +32,10 @@ int main() {
 
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        ImGui::Begin("Hello, Pop_OS!");
-        ImGui::Text("OpenCV Version: %s", CV_VERSION); // Display version in UI
-        if (ImGui::Button("Click to print OpenCV info")) {
-            std::cout << "OpenCV is linked and responding!" << std::endl;
+        if (ImGui::Begin("Control panel")) {
+            if (ImGui::Button("Load image")) {
+                controller.loadImage();
+            }
         }
         ImGui::End();
 

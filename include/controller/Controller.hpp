@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <future>
 
 #include "service/ImageLoader.hpp"
@@ -16,7 +15,7 @@ class Controller final {
 
     public:
         // Invokes service to load image
-        void loadImage(const std::string& pathToImg);
+        void loadImage();
         // Invokes service to run manual implementation of watershed
         void runWatershedSegmentation();
         // Invokes service to run opencv implementation of watershed

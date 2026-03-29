@@ -2,12 +2,22 @@
 
 #include <future>
 #include <functional>
+#include <string>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 
 #include "service/ImageService.hpp"
 
-void Controller::loadImage(const std::string& pathToImg) {
+void Controller::loadImage() {
+    // TODO: implement NDF library, replace char* by ndfchar_t*
+    // and add checks for invalid path or file
+    char* outPath;
+    std::string pathToImg = outPath;
+
+    if (pathToImg.empty()) {
+        return;
+    }
+
     cv::Mat image = cv::imread(pathToImg);
 
     mAppData.updateOriginalImage(image);
