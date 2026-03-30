@@ -9,12 +9,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # 1. Find the SFML installed on your Pop!_OS system
 # This looks for the shared libraries in /usr/lib/x86_64-linux-gnu/
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK3 REQUIRED IMPORTED_TARGET gtk+-3.0)
 
 find_package(OpenCV REQUIRED)
 
 # 2. Define the paths to your manually added ImGui files
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui")
 set(IMGUI_SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui-sfml")
+set(NFD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/nfd")
 set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # 3. Collect the ImGui source files to be compiled into your binary
@@ -26,10 +29,16 @@ set(IMGUI_SOURCES
     ${IMGUI_SFML_DIR}/imgui-SFML.cpp
 )
 
+set(NFD_SOURCES
+    ${NFD_DIR}/nfd_gtk.cpp
+    # ${NFD_DIR}/nfd_common.c  <-- Add this if you get "undefined reference" errors later
+)
+
 # 4. Create the executable including both your code and ImGui's code
 add_executable(
     watershed_app
     ${IMGUI_SOURCES}
+    ${NFD_SOURCES}
     src/Main.cpp
     src/controller/Controller.cpp
     src/model/AppData.cpp
@@ -41,8 +50,10 @@ add_executable(
 target_include_directories(watershed_app PUBLIC
     ${IMGUI_DIR}
     ${IMGUI_SFML_DIR}
+    ${NFD_DIR}
     ${OpenCV_INCLUDE_DIRS}
     ${INCLUDE_DIR}
+    ${GTK3_INCLUDE_DIRS}
 )
 
 # 6. Link against system SFML and OpenGL
@@ -55,4 +66,5 @@ target_link_libraries(
     sfml-system
     GL
     ${OpenCV_LIBS}
+    PkgConfig::GTK3
 )
