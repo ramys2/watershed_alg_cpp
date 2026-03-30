@@ -62,9 +62,9 @@ target_include_directories(watershed_app PUBLIC
 target_link_libraries(
     watershed_app
     PRIVATE
-    sfml-graphics
-    sfml-window
-    sfml-system
+    ${SFML_LIB_DIR}/libsfml-graphics.so
+    ${SFML_LIB_DIR}/libsfml-window.so
+    ${SFML_LIB_DIR}/libsfml-system.so
     GL
     ${OpenCV_LIBS}
     PkgConfig::GTK3
