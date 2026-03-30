@@ -6,8 +6,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-# 1. Find the SFML installed on your Pop!_OS system
-# This looks for the shared libraries in /usr/lib/x86_64-linux-gnu/
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED IMPORTED_TARGET gtk+-3.0)
@@ -19,6 +17,8 @@ set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/static/imgui")
 set(IMGUI_SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/static/imgui-sfml")
 set(NFD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/static/nfd")
 set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(SFML_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/shared/sfml/include")
+set(SFML_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/shared/sfml/lib")
 
 # 3. Collect the ImGui source files to be compiled into your binary
 set(IMGUI_SOURCES
@@ -54,6 +54,7 @@ target_include_directories(watershed_app PUBLIC
     ${OpenCV_INCLUDE_DIRS}
     ${INCLUDE_DIR}
     ${GTK3_INCLUDE_DIRS}
+    ${SFML_INCLUDE_DIR}
 )
 
 # 6. Link against system SFML and OpenGL
@@ -67,4 +68,11 @@ target_link_libraries(
     GL
     ${OpenCV_LIBS}
     PkgConfig::GTK3
+)
+
+link_directories(${SFML_LIB_DIR})
+
+set_target_properties(watershed_app PROPERTIES
+    BUILD_WITH_INSTALL_RPATH TRUE
+    INSTALL_RPATH "${SFML_LIB_DIR}"
 )
