@@ -15,9 +15,9 @@ pkg_check_modules(GTK3 REQUIRED IMPORTED_TARGET gtk+-3.0)
 find_package(OpenCV REQUIRED)
 
 # 2. Define the paths to your manually added ImGui files
-set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui")
-set(IMGUI_SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui-sfml")
-set(NFD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/nfd")
+set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/static/imgui")
+set(IMGUI_SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/static/imgui-sfml")
+set(NFD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/static/nfd")
 set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # 3. Collect the ImGui source files to be compiled into your binary
