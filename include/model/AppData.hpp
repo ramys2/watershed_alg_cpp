@@ -18,9 +18,9 @@ class AppData final {
         const sf::Texture& getOriginalTexture() const { return mOriginalTexture; }
         const sf::Texture& getSegmentedTexture() const { return mSegmentedTexture; }
         // Updates Matrix and corresponding sf::Texture
-        void updateOriginalImage(const cv::Mat matrix);
+        void updateOriginalImage(const cv::Mat& matrix);
         // Updates Matrix and corresponding sf::Texture
-        void updateSegmentedImage(const cv::Mat matrix);
+        void updateSegmentedImage(const cv::Mat& matrix);
         // Returns if service is running
         bool serviceIsProcessing() const { return mServiceIsProcessing; }
         // Sets service state

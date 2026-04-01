@@ -20,9 +20,13 @@ void Controller::loadImage() {
 
     if (result == NFD_OKAY) {
         // outPath.get() gives you the const char*
-        std::string pathToImg = outPath.get();
+        std::string pathToImg(outPath.get());
         // You can now use pathToImg for your logic
-        cv::Mat image = cv::imread(pathToImg);
+        cv::Mat image = mImageLoader.loadImage(pathToImg);
+
+        if (image.empty()) {
+            return;
+        }
 
         mAppData.updateOriginalImage(image);
     }
@@ -59,4 +63,14 @@ void Controller::update() {
         mAppData.updateSegmentedImage(result);
         mAppData.setServiceIsProcessing(false);
     }
+}
+
+const sf::Texture& Controller::retreiveOriginalImage() const {
+    const sf::Texture& img = mAppData.getOriginalTexture();
+    if (img.getSize().x == 0 || img.getSize().y == 0) {
+        static const sf::Texture emptyTexture;
+        return emptyTexture;
+    }
+
+    return img;
 }

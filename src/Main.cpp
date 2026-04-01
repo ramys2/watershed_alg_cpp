@@ -39,6 +39,14 @@ int main() {
         }
         ImGui::End();
 
+        const sf::Texture& texture = controller.retreiveOriginalImage();
+        if (texture.getSize().x != 0 && texture.getSize().y != 0) {
+            if (ImGui::Begin("Original Image")) {
+                ImGui::Image(texture);
+            }
+            ImGui::End();
+        }
+
         window.clear();
         ImGui::SFML::Render(window);
         window.display();
