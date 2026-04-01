@@ -20,7 +20,7 @@ void Controller::loadImage() {
 
     if (result == NFD_OKAY) {
         // outPath.get() gives you the const char*
-        std::string pathToImg = outPath.get();
+        std::string pathToImg(outPath.get());
         // You can now use pathToImg for your logic
         cv::Mat image = mImageLoader.loadImage(pathToImg);
 
