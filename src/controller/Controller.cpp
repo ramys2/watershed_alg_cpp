@@ -3,6 +3,7 @@
 #include <future>
 #include <functional>
 #include <string>
+#include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 
@@ -53,9 +54,8 @@ void Controller::runWatershedSegmentation()
         {
             return;
         }
-        cv::Mat greyImg = mImageService.convertToGreyScale(clonedMatrix);
 
-        mTaskThread = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, std::cref(clonedMatrix));
+        mTaskThread = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix);
         mAppData.setServiceIsProcessing(true);
     }
 }
@@ -70,9 +70,8 @@ void Controller::runCvWatershedSegmentation()
         {
             return;
         }
-        cv::Mat greyImg = mImageService.convertToGreyScale(clonedMatrix);
 
-        mTaskThread = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, std::cref(greyImg));
+        mTaskThread = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix);
         mAppData.setServiceIsProcessing(true);
     }
 }
@@ -87,18 +86,6 @@ void Controller::update()
     }
 }
 
-const sf::Texture &Controller::retreiveOriginalImage() const
-{
-    const sf::Texture &img = mAppData.getOriginalTexture();
-    if (img.getSize().x == 0 || img.getSize().y == 0)
-    {
-        static const sf::Texture emptyTexture;
-        return emptyTexture;
-    }
-
-    return img;
-}
-
 void Controller::renderGuiElements(const sf::Vector2u& sfWindowSize)
 {
     ImGui::SetNextWindowPos(CONTROL_PANEL_POSITION, ImGuiCond_Always);
@@ -108,6 +95,10 @@ void Controller::renderGuiElements(const sf::Vector2u& sfWindowSize)
     if (ImGui::Button("Load image"))
     {
         loadImage();
+    }
+
+    if (ImGui::Button("Run custom watershed")) {
+        runWatershedSegmentation();
     }
     ImGui::End();
 }
@@ -132,11 +123,13 @@ void Controller::renderSegmentedlImage(const sf::Vector2u& sfWindowSize)
     const sf::Texture &texture = mAppData.getSegmentedTexture();
     if (texture.getSize().x != 0 && texture.getSize().y != 0)
     {
-        float mSegImgW = (static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W - mOrgImgW);
-        ImGui::SetNextWindowPos(ImVec2(mOrgImgW + CONTROL_PANEL_W, 0), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(mSegImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+        float segImgW = static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W - mOrgImgW;
+        float segImgX = mOrgImgW + CONTROL_PANEL_W;
 
-        ImGui::Begin("Original Image", nullptr, WINDOW_FLAGS);
+        ImGui::SetNextWindowPos(ImVec2(segImgX, 0), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(segImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+
+        ImGui::Begin("Segmented Image", nullptr, WINDOW_FLAGS);
         ImGui::Image(texture);
         ImGui::End();
     }

@@ -28,18 +28,17 @@ private:
     std::future<cv::Mat> mTaskThread;
 
 public:
+    // Polls for result when segmentation is running
+    void update();
+    void renderGuiElements(const sf::Vector2u &sfWindowSize);
+    void renderOriginalImage(const sf::Vector2u& sfWindowSize);
+    void renderSegmentedlImage(const sf::Vector2u& sfWindowSize);
+
+private:
     // Invokes service to load image
     void loadImage();
     // Invokes service to run manual implementation of watershed
     void runWatershedSegmentation();
     // Invokes service to run opencv implementation of watershed
     void runCvWatershedSegmentation();
-    // Polls for result when segmentation is running
-    void update();
-    // Returns original texture
-    const sf::Texture &retreiveOriginalImage() const;
-
-    void renderGuiElements(const sf::Vector2u &sfWindowSize);
-    void renderOriginalImage(const sf::Vector2u& sfWindowSize);
-    void renderSegmentedlImage(const sf::Vector2u& sfWindowSize);
 };

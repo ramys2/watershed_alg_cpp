@@ -42,6 +42,8 @@ int main()
         controller.renderOriginalImage(windowSize);
         controller.renderSegmentedlImage(windowSize);
 
+        controller.update();
+
         window.clear();
         ImGui::SFML::Render(window);
         window.display();
