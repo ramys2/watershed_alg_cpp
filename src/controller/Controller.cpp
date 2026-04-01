@@ -24,6 +24,10 @@ void Controller::loadImage() {
         // You can now use pathToImg for your logic
         cv::Mat image = cv::imread(pathToImg);
 
+        if (!image.data) {
+            return;
+        }
+
         mAppData.updateOriginalImage(image);
     }
     else if (result == NFD_CANCEL) {

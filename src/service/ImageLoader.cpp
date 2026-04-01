@@ -1,5 +1,8 @@
 #include "service/ImageLoader.hpp"
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+
 cv::Mat ImageLoader::loadImage(const std::string& pathToImg) {
-    throw std::logic_error("Not implemented yet!");
+    return cv::imread(pathToImg, cv::IMREAD_GRAYSCALE);
 }
