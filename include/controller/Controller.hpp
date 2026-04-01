@@ -20,6 +20,8 @@ private:
     static constexpr ImVec2 CONTROL_PANEL_POSITION = ImVec2(0, 0);
     static constexpr ImVec2 ORIGINAL_IMG_POSITION = ImVec2(CONTROL_PANEL_W, 0);
 
+    float mOrgImgW = 0;
+
     ImageService mImageService;
     ImageLoader mImageLoader;
     AppData mAppData;
@@ -39,4 +41,5 @@ public:
 
     void renderGuiElements(const sf::Vector2u &sfWindowSize);
     void renderOriginalImage(const sf::Vector2u& sfWindowSize);
+    void renderSegmentedlImage(const sf::Vector2u& sfWindowSize);
 };

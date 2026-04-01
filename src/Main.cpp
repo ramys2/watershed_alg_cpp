@@ -40,6 +40,7 @@ int main()
 
         controller.renderGuiElements(windowSize);
         controller.renderOriginalImage(windowSize);
+        controller.renderSegmentedlImage(windowSize);
 
         window.clear();
         ImGui::SFML::Render(window);

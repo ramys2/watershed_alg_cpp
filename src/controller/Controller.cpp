@@ -117,9 +117,24 @@ void Controller::renderOriginalImage(const sf::Vector2u& sfWindowSize)
     const sf::Texture &texture = mAppData.getOriginalTexture();
     if (texture.getSize().x != 0 && texture.getSize().y != 0)
     {
-        float orgImgW = (static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W) / 2;
+        mOrgImgW = (static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W) / 2;
         ImGui::SetNextWindowPos(ORIGINAL_IMG_POSITION, ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(orgImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(mOrgImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+
+        ImGui::Begin("Original Image", nullptr, WINDOW_FLAGS);
+        ImGui::Image(texture);
+        ImGui::End();
+    }
+}
+
+void Controller::renderSegmentedlImage(const sf::Vector2u& sfWindowSize)
+{
+    const sf::Texture &texture = mAppData.getSegmentedTexture();
+    if (texture.getSize().x != 0 && texture.getSize().y != 0)
+    {
+        float mSegImgW = (static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W - mOrgImgW);
+        ImGui::SetNextWindowPos(ImVec2(mOrgImgW + CONTROL_PANEL_W, 0), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(mSegImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
 
         ImGui::Begin("Original Image", nullptr, WINDOW_FLAGS);
         ImGui::Image(texture);
