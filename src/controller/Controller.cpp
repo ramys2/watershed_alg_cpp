@@ -24,7 +24,7 @@ void Controller::loadImage() {
         // You can now use pathToImg for your logic
         cv::Mat image = cv::imread(pathToImg);
 
-        if (!image.data) {
+        if (image.empty()) {
             return;
         }
 
