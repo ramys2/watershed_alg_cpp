@@ -9,7 +9,8 @@
 #include "imgui-SFML.h"
 #include "controller/Controller.hpp"
 
-int main() {
+int main()
+{
     std::cout << "--- Version Check ---" << std::endl;
     std::cout << "SFML: " << SFML_VERSION_MAJOR << "." << SFML_VERSION_MINOR << "." << SFML_VERSION_PATCH << std::endl;
     std::cout << "ImGui: " << IMGUI_VERSION << std::endl;
@@ -19,29 +20,37 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Pop_OS ImGui + SFML + OpenCV");
     window.setFramerateLimit(60);
 
-    if (!ImGui::SFML::Init(window)) return -1;
+    if (!ImGui::SFML::Init(window))
+        return -1;
 
     sf::Clock deltaClock;
     Controller controller;
-    while (window.isOpen()) {
+    while (window.isOpen())
+    {
         sf::Event event;
-        while (window.pollEvent(event)) {
+        while (window.pollEvent(event))
+        {
             ImGui::SFML::ProcessEvent(window, event);
-            if (event.type == sf::Event::Closed) window.close();
+            if (event.type == sf::Event::Closed)
+                window.close();
         }
 
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        if (ImGui::Begin("Control panel")) {
-            if (ImGui::Button("Load image")) {
+        if (ImGui::Begin("Control panel"))
+        {
+            if (ImGui::Button("Load image"))
+            {
                 controller.loadImage();
             }
         }
         ImGui::End();
 
-        const sf::Texture& texture = controller.retreiveOriginalImage();
-        if (texture.getSize().x != 0 && texture.getSize().y != 0) {
-            if (ImGui::Begin("Original Image")) {
+        const sf::Texture &texture = controller.retreiveOriginalImage();
+        if (texture.getSize().x != 0 && texture.getSize().y != 0)
+        {
+            if (ImGui::Begin("Original Image"))
+            {
                 ImGui::Image(texture);
             }
             ImGui::End();
