@@ -28,6 +28,7 @@ int main()
     while (window.isOpen())
     {
         sf::Event event;
+        sf::Vector2u windowSize = window.getSize();
         while (window.pollEvent(event))
         {
             ImGui::SFML::ProcessEvent(window, event);
@@ -37,24 +38,8 @@ int main()
 
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        if (ImGui::Begin("Control panel"))
-        {
-            if (ImGui::Button("Load image"))
-            {
-                controller.loadImage();
-            }
-        }
-        ImGui::End();
-
-        const sf::Texture &texture = controller.retreiveOriginalImage();
-        if (texture.getSize().x != 0 && texture.getSize().y != 0)
-        {
-            if (ImGui::Begin("Original Image"))
-            {
-                ImGui::Image(texture);
-            }
-            ImGui::End();
-        }
+        controller.renderGuiElements(windowSize);
+        controller.renderOriginalImage(windowSize);
 
         window.clear();
         ImGui::SFML::Render(window);

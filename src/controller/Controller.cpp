@@ -98,3 +98,31 @@ const sf::Texture &Controller::retreiveOriginalImage() const
 
     return img;
 }
+
+void Controller::renderGuiElements(const sf::Vector2u& sfWindowSize)
+{
+    ImGui::SetNextWindowPos(CONTROL_PANEL_POSITION, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(CONTROL_PANEL_W, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+
+    ImGui::Begin("Control panel", nullptr, WINDOW_FLAGS);
+    if (ImGui::Button("Load image"))
+    {
+        loadImage();
+    }
+    ImGui::End();
+}
+
+void Controller::renderOriginalImage(const sf::Vector2u& sfWindowSize)
+{
+    const sf::Texture &texture = mAppData.getOriginalTexture();
+    if (texture.getSize().x != 0 && texture.getSize().y != 0)
+    {
+        float orgImgW = (static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W) / 2;
+        ImGui::SetNextWindowPos(ORIGINAL_IMG_POSITION, ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(orgImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+
+        ImGui::Begin("Original Image", nullptr, WINDOW_FLAGS);
+        ImGui::Image(texture);
+        ImGui::End();
+    }
+}

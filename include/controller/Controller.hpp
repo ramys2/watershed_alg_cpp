@@ -6,10 +6,20 @@
 #include "service/ImageLoader.hpp"
 #include "service/ImageService.hpp"
 #include "model/AppData.hpp"
+#include "imgui.h"
+#include "imgui-SFML.h"
 
 class Controller final
 {
 private:
+    static constexpr ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoMove |
+                                                    ImGuiWindowFlags_NoResize |
+                                                    ImGuiWindowFlags_NoCollapse |
+                                                    ImGuiWindowFlags_NoBringToFrontOnFocus;
+    static constexpr float CONTROL_PANEL_W = 300.0f;
+    static constexpr ImVec2 CONTROL_PANEL_POSITION = ImVec2(0, 0);
+    static constexpr ImVec2 ORIGINAL_IMG_POSITION = ImVec2(CONTROL_PANEL_W, 0);
+
     ImageService mImageService;
     ImageLoader mImageLoader;
     AppData mAppData;
@@ -26,4 +36,7 @@ public:
     void update();
     // Returns original texture
     const sf::Texture &retreiveOriginalImage() const;
+
+    void renderGuiElements(const sf::Vector2u &sfWindowSize);
+    void renderOriginalImage(const sf::Vector2u& sfWindowSize);
 };
