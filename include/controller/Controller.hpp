@@ -1,6 +1,7 @@
 #pragma once
 
 #include <future>
+#include <SFML/Config.hpp>
 
 #include "service/ImageLoader.hpp"
 #include "service/ImageService.hpp"
@@ -22,5 +23,7 @@ class Controller final {
         void runCvWatershedSegmentation();
         // Polls for result when segmentation is running
         void update();
+        // Returns original texture
+        const sf::Texture& retreiveOriginalImage() const;
 
 };

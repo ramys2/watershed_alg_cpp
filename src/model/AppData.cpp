@@ -11,6 +11,7 @@ void AppData::updateOriginalImage(const cv::Mat matrix) {
 
     mOriginalTexture.update(mOriginalMatrix.data);
 }
+
 void AppData::updateSegmentedImage(const cv::Mat matrix) {
     mSegmentedMatrix = matrix;
 
