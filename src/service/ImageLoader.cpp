@@ -4,10 +4,12 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 
-cv::Mat ImageLoader::loadImage(const std::string& pathToImg) {
+cv::Mat ImageLoader::loadImage(const std::string &pathToImg)
+{
     cv::Mat loadedImage = cv::imread(pathToImg, cv::IMREAD_COLOR);
 
-    if (loadedImage.empty()) {
+    if (loadedImage.empty())
+    {
         return cv::Mat();
     }
 
