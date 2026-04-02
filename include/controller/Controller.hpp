@@ -16,11 +16,15 @@ private:
                                                     ImGuiWindowFlags_NoResize |
                                                     ImGuiWindowFlags_NoCollapse |
                                                     ImGuiWindowFlags_NoBringToFrontOnFocus;
-    static constexpr float CONTROL_PANEL_W = 300.0f;
+    static constexpr float CONTROL_PANEL_W = 400.0f;
     static constexpr ImVec2 CONTROL_PANEL_POSITION = ImVec2(0, 0);
     static constexpr ImVec2 ORIGINAL_IMG_POSITION = ImVec2(CONTROL_PANEL_W, 0);
 
     float mOrgImgW = 0;
+
+    int mNumberOfMarkers = 2;
+    int mGausianBlurSize = 3;
+    int mMorphologyKernelSize = 2;
 
     ImageService mImageService;
     ImageLoader mImageLoader;

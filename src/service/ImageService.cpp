@@ -6,14 +6,14 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core.hpp>
 
-cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix)
+cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
 {
     std::cout << "Pre-processing image" << std::endl;
-    cv::Mat preparedImg = preProcessForCustomWS(matrix);
+    cv::Mat preparedImg = preProcessForCustomWS(matrix, gaussianBlurMatrixSize, kernelMatrixSize);
     cv::Mat grayscaleImg = convertToGreyScale(matrix);
     cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_32SC1);
 
-    std::vector<std::pair<int, int>> local_mins = find_local_mins(preparedImg, 10); // TODO: Parametrize
+    std::vector<std::pair<int, int>> local_mins = find_local_mins(preparedImg, max_markers); // TODO: Parametrize
     std::priority_queue<Pixel, std::vector<Pixel>, std::greater<Pixel>> pq;
     for (int i = 0; i < local_mins.size(); ++i)
     {
@@ -68,12 +68,12 @@ cv::Mat ImageService::cvWatershedSegmentation(const cv::Mat matrix)
     throw std::logic_error("Not implemented yet!");
 }
 
-cv::Mat ImageService::preProcessForCustomWS(const cv::Mat &matrix)
+cv::Mat ImageService::preProcessForCustomWS(const cv::Mat &matrix, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
 {
     cv::Mat grayscale = convertToGreyScale(matrix);
-    cv::GaussianBlur(grayscale, grayscale, cv::Size(7, 7), 0);
+    cv::GaussianBlur(grayscale, grayscale, cv::Size(gaussianBlurMatrixSize, gaussianBlurMatrixSize), 0);
 
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(kernelMatrixSize, kernelMatrixSize));
     cv::morphologyEx(grayscale, grayscale, cv::MORPH_GRADIENT, kernel);
 
     return grayscale;

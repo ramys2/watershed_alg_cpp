@@ -55,7 +55,7 @@ void Controller::runWatershedSegmentation()
             return;
         }
 
-        mTaskThread = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix);
+        mTaskThread = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix, mNumberOfMarkers, mGausianBlurSize, mMorphologyKernelSize);
         mAppData.setServiceIsProcessing(true);
     }
 }
@@ -86,7 +86,7 @@ void Controller::update()
     }
 }
 
-void Controller::renderGuiElements(const sf::Vector2u& sfWindowSize)
+void Controller::renderGuiElements(const sf::Vector2u &sfWindowSize)
 {
     ImGui::SetNextWindowPos(CONTROL_PANEL_POSITION, ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(CONTROL_PANEL_W, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
@@ -97,13 +97,28 @@ void Controller::renderGuiElements(const sf::Vector2u& sfWindowSize)
         loadImage();
     }
 
-    if (ImGui::Button("Run custom watershed")) {
+    if (ImGui::Button("Run custom watershed"))
+    {
         runWatershedSegmentation();
     }
+    ImGui::SliderInt("Markers", &mNumberOfMarkers, 2, 253);
+    if (ImGui::SliderInt("Gaussian Kernel Blur Size", &mGausianBlurSize, 3, 31))
+    {
+        if (mGausianBlurSize % 2 == 0)
+        {
+            mGausianBlurSize++;
+        }
+
+        if (mGausianBlurSize > 31)
+        {
+            mGausianBlurSize = 31;
+        }
+    }
+    ImGui::SliderInt("Morphology kernel size", &mMorphologyKernelSize, 2, 20);
     ImGui::End();
 }
 
-void Controller::renderOriginalImage(const sf::Vector2u& sfWindowSize)
+void Controller::renderOriginalImage(const sf::Vector2u &sfWindowSize)
 {
     const sf::Texture &texture = mAppData.getOriginalTexture();
     if (texture.getSize().x != 0 && texture.getSize().y != 0)
@@ -118,7 +133,7 @@ void Controller::renderOriginalImage(const sf::Vector2u& sfWindowSize)
     }
 }
 
-void Controller::renderSegmentedlImage(const sf::Vector2u& sfWindowSize)
+void Controller::renderSegmentedlImage(const sf::Vector2u &sfWindowSize)
 {
     const sf::Texture &texture = mAppData.getSegmentedTexture();
     if (texture.getSize().x != 0 && texture.getSize().y != 0)
