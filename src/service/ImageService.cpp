@@ -72,57 +72,38 @@ cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix,
 
 cv::Mat ImageService::cvWatershedSegmentation(const cv::Mat matrix)
 {
-    if (matrix.empty())
-        return matrix;
+    // 1. Convert to Grayscale & Blur (Essential to avoid noise seeds)
+    cv::Mat gray, blurred;
+    cv::cvtColor(matrix, gray, cv::COLOR_RGBA2GRAY);
+    cv::GaussianBlur(gray, blurred, cv::Size(5, 5), 0);
 
-    // 1. Watershed requires 3-channel BGR for the internal math
+    // 2. Find seeds using your local mins logic
+    std::vector<std::pair<int, int>> seeds =
+        find_local_mins(blurred, 200);
+
+    // 3. Prepare the 32-bit Marker Matrix
+    cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_32S);
+
+    // 4. Draw markers as small circles rather than single pixels
+    // This makes the seeds more "stable" for the OpenCV flooding algorithm
+    for (int i = 0; i < seeds.size(); ++i)
+    {
+        cv::circle(markers, cv::Point(seeds[i].second, seeds[i].first), 3,
+                   cv::Scalar(i + 2), -1);
+    }
+
+    // 5. Watershed requires BGR
     cv::Mat src;
-    if (matrix.channels() == 4)
-    {
-        cv::cvtColor(matrix, src, cv::COLOR_RGBA2BGR);
-    }
-    else
-    {
-        src = matrix.clone();
-    }
+    cv::cvtColor(matrix, src, cv::COLOR_RGBA2BGR);
 
-    // 2. Grayscale & Thresholding
-    cv::Mat gray, thresh;
-    cv::cvtColor(src, gray, cv::COLOR_BGR2GRAY);
-    cv::threshold(gray, thresh, 0, 255,
-                  cv::THRESH_BINARY_INV + cv::THRESH_OTSU);
-
-    // 3. Find Background (Dilate) and Foreground (Distance Transform)
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
-    cv::Mat sure_bg;
-    cv::dilate(thresh, sure_bg, kernel, cv::Point(-1, -1), 3);
-
-    cv::Mat dist, sure_fg;
-    cv::distanceTransform(thresh, dist, cv::DIST_L2, 5);
-
-    double maxVal;
-    cv::minMaxLoc(dist, nullptr, &maxVal);
-    cv::threshold(dist, sure_fg, 0.9 * maxVal, 255, cv::THRESH_BINARY);
-    sure_fg.convertTo(sure_fg, CV_8U);
-
-    // 4. Markers & Unknown region
-    cv::Mat markers, unknown;
-    cv::connectedComponents(sure_fg, markers);
-    cv::subtract(sure_bg, sure_fg, unknown);
-
-    markers += 1;
-    markers.setTo(0, unknown == 255);
-
-    // 5. Execute Watershed
+    // 6. Execute
     cv::watershed(src, markers);
 
-    // 6. Build the Grayscale-to-RGBA result
+    // 7. Visualizing the blue lines on grayscale RGBA
     cv::Mat result;
-    // Start by making the whole image grayscale but in 4-channel format
     cv::cvtColor(gray, result, cv::COLOR_GRAY2RGBA);
-
-    // 7. Draw the Blue lines
-    result.setTo(cv::Scalar(0, 0, 255, 255), markers == -1);
+    result.setTo(cv::Scalar(0, 0, 255, 255),
+                 markers == -1); // Blue in RGBA is [0,0,255,255]
 
     return result;
 }
