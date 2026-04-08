@@ -100,6 +100,10 @@ void Controller::renderGuiElements(const sf::Vector2u &sfWindowSize)
     {
         runWatershedSegmentation();
     }
+    if (ImGui::Button("Run opencv watershed"))
+    {
+        runCvWatershedSegmentation();
+    }
     ImGui::SliderInt("Markers", &mNumberOfMarkers, 2, 253);
     if (ImGui::SliderInt("Gaussian Kernel Blur Size", &mGausianBlurSize, 3, 31))
     {
