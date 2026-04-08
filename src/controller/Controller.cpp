@@ -7,6 +7,7 @@
 
 #include "nfd.hpp"
 #include "service/ImageService.hpp"
+#include "imgui-SFML.h"
 
 void Controller::loadImage()
 {
