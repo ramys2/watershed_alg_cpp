@@ -1,9 +1,7 @@
 #include "controller/Controller.hpp"
 
 #include <future>
-#include <functional>
 #include <string>
-#include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 

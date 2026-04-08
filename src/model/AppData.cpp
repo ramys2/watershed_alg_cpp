@@ -1,7 +1,5 @@
 #include "model/AppData.hpp"
 
-#include <stdexcept>
-
 void AppData::updateOriginalImage(const cv::Mat &matrix)
 {
     mOriginalMatrix = matrix.clone();

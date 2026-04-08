@@ -7,7 +7,6 @@
 #include "service/ImageService.hpp"
 #include "model/AppData.hpp"
 #include "imgui.h"
-#include "imgui-SFML.h"
 
 class Controller final
 {
