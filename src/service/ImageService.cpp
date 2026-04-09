@@ -1,19 +1,24 @@
 #include "service/ImageService.hpp"
 
 #include <iostream>
-#include <stdexcept>
-#include <queue>
-#include <opencv2/imgproc.hpp>
 #include <opencv2/core.hpp>
+#include <opencv2/core/hal/interface.h>
+#include <opencv2/imgproc.hpp>
+#include <queue>
 
-cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
+cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix,
+                                            const int max_markers,
+                                            const int gaussianBlurMatrixSize,
+                                            const int kernelMatrixSize)
 {
     std::cout << "Pre-processing image" << std::endl;
-    cv::Mat preparedImg = preProcessForCustomWS(matrix, gaussianBlurMatrixSize, kernelMatrixSize);
+    cv::Mat preparedImg =
+        preProcessForCustomWS(matrix, gaussianBlurMatrixSize, kernelMatrixSize);
     cv::Mat grayscaleImg = convertToGreyScale(matrix);
-    cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_32SC1);
+    cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_8UC1);
 
-    std::vector<std::pair<int, int>> local_mins = find_local_mins(preparedImg, max_markers); // TODO: Parametrize
+    std::vector<std::pair<int, int>> local_mins =
+        find_local_mins(preparedImg, max_markers); // TODO: Parametrize
     std::priority_queue<Pixel, std::vector<Pixel>, std::greater<Pixel>> pq;
     for (int i = 0; i < local_mins.size(); ++i)
     {
@@ -42,7 +47,8 @@ cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix, const int max_
                 int nr = current.r + dr;
                 int nc = current.c + dc;
 
-                if (nr >= 0 && nr < markers.rows && nc >= 0 && nc < markers.cols)
+                if (nr >= 0 && nr < markers.rows && nc >= 0 &&
+                    nc < markers.cols)
                 {
                     uchar &neighbor_label = markers.at<uchar>(nr, nc);
 
@@ -51,7 +57,8 @@ cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix, const int max_
                         neighbor_label = current_label;
                         pq.push({nr, nc, preparedImg.at<uchar>(nr, nc)});
                     }
-                    else if (neighbor_label != current_label && neighbor_label != 1)
+                    else if (neighbor_label != current_label &&
+                             neighbor_label != 1)
                     {
                         markers.at<uchar>(current.r, current.c) = 1;
                     }
@@ -65,15 +72,57 @@ cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix, const int max_
 
 cv::Mat ImageService::cvWatershedSegmentation(const cv::Mat matrix)
 {
-    throw std::logic_error("Not implemented yet!");
+    // 1. Convert to Grayscale & Blur (Essential to avoid noise seeds)
+    cv::Mat gray, blurred;
+    cv::cvtColor(matrix, gray, cv::COLOR_RGBA2GRAY);
+    cv::GaussianBlur(gray, blurred, cv::Size(5, 5), 0);
+
+    cv::Mat gradient;
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7, 7));
+    cv::morphologyEx(blurred, gradient, cv::MORPH_GRADIENT, kernel);
+
+    // 2. Find seeds using your local mins logic
+    std::vector<std::pair<int, int>> seeds =
+        find_local_mins(gradient, 200);
+
+    // 3. Prepare the 32-bit Marker Matrix
+    cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_32S);
+
+    // 4. Draw markers as small circles rather than single pixels
+    // This makes the seeds more "stable" for the OpenCV flooding algorithm
+    for (int i = 0; i < seeds.size(); ++i)
+    {
+        cv::circle(markers, cv::Point(seeds[i].second, seeds[i].first), 3,
+                   cv::Scalar(i + 2), -1);
+    }
+
+    // 5. Watershed requires BGR
+    cv::Mat src;
+    cv::cvtColor(matrix, src, cv::COLOR_RGBA2BGR);
+
+    // 6. Execute
+    cv::watershed(src, markers);
+
+    // 7. Visualizing the blue lines on grayscale RGBA
+    cv::Mat result;
+    cv::cvtColor(gray, result, cv::COLOR_GRAY2RGBA);
+    result.setTo(cv::Scalar(0, 0, 255, 255),
+                 markers == -1); // Blue in RGBA is [0,0,255,255]
+
+    return result;
 }
 
-cv::Mat ImageService::preProcessForCustomWS(const cv::Mat &matrix, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
+cv::Mat ImageService::preProcessForCustomWS(const cv::Mat &matrix,
+                                            const int gaussianBlurMatrixSize,
+                                            const int kernelMatrixSize)
 {
     cv::Mat grayscale = convertToGreyScale(matrix);
-    cv::GaussianBlur(grayscale, grayscale, cv::Size(gaussianBlurMatrixSize, gaussianBlurMatrixSize), 0);
+    cv::GaussianBlur(grayscale, grayscale,
+                     cv::Size(gaussianBlurMatrixSize, gaussianBlurMatrixSize),
+                     0);
 
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(kernelMatrixSize, kernelMatrixSize));
+    cv::Mat kernel = cv::getStructuringElement(
+        cv::MORPH_RECT, cv::Size(kernelMatrixSize, kernelMatrixSize));
     cv::morphologyEx(grayscale, grayscale, cv::MORPH_GRADIENT, kernel);
 
     return grayscale;
@@ -82,11 +131,12 @@ cv::Mat ImageService::preProcessForCustomWS(const cv::Mat &matrix, const int gau
 cv::Mat ImageService::convertToGreyScale(const cv::Mat &matrix)
 {
     cv::Mat greyImg;
-    cv::cvtColor(matrix, greyImg, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(matrix, greyImg, cv::COLOR_RGBA2GRAY);
     return greyImg;
 }
 
-cv::Mat ImageService::postProcessingForCustomWS(const cv::Mat &matrix, const cv::Mat &markers)
+cv::Mat ImageService::postProcessingForCustomWS(const cv::Mat &matrix,
+                                                const cv::Mat &markers)
 {
     cv::Mat rgbaImg;
     cv::cvtColor(matrix, rgbaImg, cv::COLOR_GRAY2RGBA);
@@ -103,7 +153,8 @@ cv::Mat ImageService::postProcessingForCustomWS(const cv::Mat &matrix, const cv:
     return rgbaImg;
 }
 
-std::vector<std::pair<int, int>> ImageService::find_local_mins(const cv::Mat &img_mat, int max_markers)
+std::vector<std::pair<int, int>>
+ImageService::find_local_mins(const cv::Mat &img_mat, int max_markers)
 {
     std::vector<Pixel> candidates;
     for (int r = 1; r < img_mat.rows - 1; ++r)
