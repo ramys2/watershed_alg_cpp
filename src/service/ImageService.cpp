@@ -70,20 +70,20 @@ cv::Mat ImageService::watershedSegmentation(const cv::Mat matrix,
     return postProcessingForCustomWS(grayscaleImg, markers);
 }
 
-cv::Mat ImageService::cvWatershedSegmentation(const cv::Mat matrix)
+cv::Mat ImageService::cvWatershedSegmentation(const cv::Mat matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
 {
     // 1. Convert to Grayscale & Blur (Essential to avoid noise seeds)
     cv::Mat gray, blurred;
     cv::cvtColor(matrix, gray, cv::COLOR_RGBA2GRAY);
-    cv::GaussianBlur(gray, blurred, cv::Size(5, 5), 0);
+    cv::GaussianBlur(gray, blurred, cv::Size(gaussianBlurMatrixSize, gaussianBlurMatrixSize), 0);
 
     cv::Mat gradient;
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7, 7));
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(kernelMatrixSize, kernelMatrixSize));
     cv::morphologyEx(blurred, gradient, cv::MORPH_GRADIENT, kernel);
 
     // 2. Find seeds using your local mins logic
     std::vector<std::pair<int, int>> seeds =
-        find_local_mins(gradient, 200);
+        find_local_mins(gradient, max_markers);
 
     // 3. Prepare the 32-bit Marker Matrix
     cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_32S);

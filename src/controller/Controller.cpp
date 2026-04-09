@@ -70,7 +70,7 @@ void Controller::runCvWatershedSegmentation()
             return;
         }
 
-        mTaskThread = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix);
+        mTaskThread = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix, mCvNumberOfMarkers, mCvGausianBlurSize, mCvMorphologyKernelSize);
         mAppData.setServiceIsProcessing(true);
     }
 }
