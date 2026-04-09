@@ -77,9 +77,13 @@ cv::Mat ImageService::cvWatershedSegmentation(const cv::Mat matrix)
     cv::cvtColor(matrix, gray, cv::COLOR_RGBA2GRAY);
     cv::GaussianBlur(gray, blurred, cv::Size(5, 5), 0);
 
+    cv::Mat gradient;
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7, 7));
+    cv::morphologyEx(blurred, gradient, cv::MORPH_GRADIENT, kernel);
+
     // 2. Find seeds using your local mins logic
     std::vector<std::pair<int, int>> seeds =
-        find_local_mins(blurred, 200);
+        find_local_mins(gradient, 200);
 
     // 3. Prepare the 32-bit Marker Matrix
     cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_32S);
