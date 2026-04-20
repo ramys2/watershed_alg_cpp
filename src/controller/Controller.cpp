@@ -13,11 +13,11 @@
 #include "nfd.hpp"
 #include "service/ImageService.hpp"
 
-Controller::Controller()
+Controller::Controller(const sf::Vector2u &sfWindowSize)
     : mNumberOfMarkers(2), mGausianBlurSize(3), mMorphologyKernelSize(2),
       mCvNumberOfMarkers(2), mCvGausianBlurSize(3), mCvMorphologyKernelSize(2),
       mServiceIsProcessing(false), mDuration(0.0), mWatershedMethod(""),
-      mOutputfilePath(generateTimestampPath())
+      mOutputfilePath(generateTimestampPath()), mWindowSize(sfWindowSize)
 {
     std::filesystem::path dir(OUTPUT_DIR);
 
@@ -134,11 +134,11 @@ void Controller::update()
     }
 }
 
-void Controller::renderGuiElements(const sf::Vector2u &sfWindowSize)
+void Controller::renderGuiElements()
 {
     ImGui::SetNextWindowPos(CONTROL_PANEL_POSITION, ImGuiCond_Always);
     ImGui::SetNextWindowSize(
-        ImVec2(CONTROL_PANEL_W, static_cast<float>(sfWindowSize.y)),
+        ImVec2(CONTROL_PANEL_W, static_cast<float>(mWindowSize.y)),
         ImGuiCond_Always);
 
     ImGui::Begin("Control panel", nullptr, WINDOW_FLAGS);
@@ -189,15 +189,15 @@ void Controller::renderGuiElements(const sf::Vector2u &sfWindowSize)
     ImGui::End();
 }
 
-void Controller::renderOriginalImage(const sf::Vector2u &sfWindowSize)
+void Controller::renderOriginalImage()
 {
     const sf::Texture &texture = mAppData.getOriginalTexture();
     if (texture.getSize().x != 0 && texture.getSize().y != 0)
     {
-        mOrgImgW = (static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W) / 2;
+        mOrgImgW = (static_cast<float>(mWindowSize.x) - CONTROL_PANEL_W) / 2;
         ImGui::SetNextWindowPos(ORIGINAL_IMG_POSITION, ImGuiCond_Always);
         ImGui::SetNextWindowSize(
-            ImVec2(mOrgImgW, static_cast<float>(sfWindowSize.y)),
+            ImVec2(mOrgImgW, static_cast<float>(mWindowSize.y)),
             ImGuiCond_Always);
 
         ImGui::Begin("Original Image", nullptr, WINDOW_FLAGS);
@@ -206,18 +206,18 @@ void Controller::renderOriginalImage(const sf::Vector2u &sfWindowSize)
     }
 }
 
-void Controller::renderSegmentedlImage(const sf::Vector2u &sfWindowSize)
+void Controller::renderSegmentedlImage()
 {
     const sf::Texture &texture = mAppData.getSegmentedTexture();
     if (texture.getSize().x != 0 && texture.getSize().y != 0)
     {
         float segImgW =
-            static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W - mOrgImgW;
+            static_cast<float>(mWindowSize.x) - CONTROL_PANEL_W - mOrgImgW;
         float segImgX = mOrgImgW + CONTROL_PANEL_W;
 
         ImGui::SetNextWindowPos(ImVec2(segImgX, 0), ImGuiCond_Always);
         ImGui::SetNextWindowSize(
-            ImVec2(segImgW, static_cast<float>(sfWindowSize.y)),
+            ImVec2(segImgW, static_cast<float>(mWindowSize.y)),
             ImGuiCond_Always);
 
         ImGui::Begin("Segmented Image", nullptr, WINDOW_FLAGS);
