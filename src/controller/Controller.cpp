@@ -1,20 +1,46 @@
 #include "controller/Controller.hpp"
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <future>
-#include <string>
+#include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <string>
 
+#include "imgui-SFML.h"
 #include "nfd.hpp"
 #include "service/ImageService.hpp"
-#include "imgui-SFML.h"
+
+Controller::Controller()
+    : mNumberOfMarkers(2), mGausianBlurSize(3), mMorphologyKernelSize(2),
+      mCvNumberOfMarkers(2), mCvGausianBlurSize(3), mCvMorphologyKernelSize(2),
+      mServiceIsProcessing(false), mDuration(0.0), mWatershedMethod(""),
+      mOutputfilePath(generateTimestampPath())
+{
+    std::filesystem::path dir(OUTPUT_DIR);
+
+    try
+    {
+        if (!std::filesystem::exists(dir))
+        {
+            std::filesystem::create_directories(dir);
+        }
+    }
+    catch (const std::filesystem::filesystem_error &e)
+    {
+        // Handle potential permission issues or disk errors
+        std::cerr << "Error creating directory: " << e.what() << std::endl;
+    }
+}
 
 void Controller::loadImage()
 {
     NFD::Guard nfdGuard;
     NFD::UniquePath outPath;
-    nfdfilteritem_t filterItem[2] = {{"Image Files", "jpg,png,jpeg"}, {"All Files", "*"}};
+    nfdfilteritem_t filterItem[2] = {{"Image Files", "jpg,png,jpeg"},
+                                     {"All Files", "*"}};
 
     nfdresult_t result = NFD::OpenDialog(outPath, filterItem, 2);
 
@@ -56,7 +82,10 @@ void Controller::runWatershedSegmentation()
         mServiceIsProcessing = true;
         mWatershedMethod = "custom_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
-        mTaskFuture = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix, mNumberOfMarkers, mGausianBlurSize, mMorphologyKernelSize);
+        mTaskFuture =
+            std::async(std::launch::async, &ImageService::watershedSegmentation,
+                       &mImageService, clonedMatrix, mNumberOfMarkers,
+                       mGausianBlurSize, mMorphologyKernelSize);
     }
 }
 
@@ -74,13 +103,17 @@ void Controller::runCvWatershedSegmentation()
         mServiceIsProcessing = true;
         mWatershedMethod = "opencv_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
-        mTaskFuture = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix, mCvNumberOfMarkers, mCvGausianBlurSize, mCvMorphologyKernelSize);
+        mTaskFuture = std::async(
+            std::launch::async, &ImageService::cvWatershedSegmentation,
+            &mImageService, clonedMatrix, mCvNumberOfMarkers,
+            mCvGausianBlurSize, mCvMorphologyKernelSize);
     }
 }
 
 void Controller::update()
 {
-    if (mServiceIsProcessing && mTaskFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+    if (mServiceIsProcessing && mTaskFuture.wait_for(std::chrono::seconds(0)) ==
+                                    std::future_status::ready)
     {
         // Capture time
         mEndTime = std::chrono::high_resolution_clock::now();
@@ -90,6 +123,7 @@ void Controller::update()
         // Update image model
         cv::Mat result = mTaskFuture.get();
         mAppData.updateSegmentedImage(result);
+        writeTime();
 
         // Reset state
         mServiceIsProcessing = false;
@@ -103,7 +137,9 @@ void Controller::update()
 void Controller::renderGuiElements(const sf::Vector2u &sfWindowSize)
 {
     ImGui::SetNextWindowPos(CONTROL_PANEL_POSITION, ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(CONTROL_PANEL_W, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(
+        ImVec2(CONTROL_PANEL_W, static_cast<float>(sfWindowSize.y)),
+        ImGuiCond_Always);
 
     ImGui::Begin("Control panel", nullptr, WINDOW_FLAGS);
     if (ImGui::Button("Load image"))
@@ -160,7 +196,9 @@ void Controller::renderOriginalImage(const sf::Vector2u &sfWindowSize)
     {
         mOrgImgW = (static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W) / 2;
         ImGui::SetNextWindowPos(ORIGINAL_IMG_POSITION, ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(mOrgImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(
+            ImVec2(mOrgImgW, static_cast<float>(sfWindowSize.y)),
+            ImGuiCond_Always);
 
         ImGui::Begin("Original Image", nullptr, WINDOW_FLAGS);
         ImGui::Image(texture);
@@ -173,14 +211,40 @@ void Controller::renderSegmentedlImage(const sf::Vector2u &sfWindowSize)
     const sf::Texture &texture = mAppData.getSegmentedTexture();
     if (texture.getSize().x != 0 && texture.getSize().y != 0)
     {
-        float segImgW = static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W - mOrgImgW;
+        float segImgW =
+            static_cast<float>(sfWindowSize.x) - CONTROL_PANEL_W - mOrgImgW;
         float segImgX = mOrgImgW + CONTROL_PANEL_W;
 
         ImGui::SetNextWindowPos(ImVec2(segImgX, 0), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(segImgW, static_cast<float>(sfWindowSize.y)), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(
+            ImVec2(segImgW, static_cast<float>(sfWindowSize.y)),
+            ImGuiCond_Always);
 
         ImGui::Begin("Segmented Image", nullptr, WINDOW_FLAGS);
         ImGui::Image(texture);
         ImGui::End();
+    }
+}
+
+std::string Controller::generateTimestampPath()
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&now_time), "%Y%m%d%H%M%S");
+    return OUTPUT_DIR + "segmentation_runtime_" + ss.str() + ".csv";
+}
+
+void Controller::writeTime()
+{
+    std::ofstream file(mOutputfilePath, std::ios::app);
+    int rows = mAppData.getSegmentedMatrix().rows;
+    int cols = mAppData.getSegmentedMatrix().cols;
+    if (file.is_open())
+    {
+        file << mWatershedMethod << ", " << cols << "x" << rows << ", "
+             << mDuration << "\n";
+        file.close();
     }
 }

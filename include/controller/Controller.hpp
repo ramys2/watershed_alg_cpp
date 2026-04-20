@@ -23,16 +23,19 @@ private:
     static constexpr float CONTROL_PANEL_W = 400.0f;
     static constexpr ImVec2 CONTROL_PANEL_POSITION = ImVec2(0, 0);
     static constexpr ImVec2 ORIGINAL_IMG_POSITION = ImVec2(CONTROL_PANEL_W, 0);
+    static constexpr std::string OUTPUT_DIR = "statistics/";
 
-    float mOrgImgW = 0;
+    const std::string mOutputfilePath;
 
-    int mNumberOfMarkers = 2;
-    int mGausianBlurSize = 3;
-    int mMorphologyKernelSize = 2;
+    float mOrgImgW;
 
-    int mCvNumberOfMarkers = 2;
-    int mCvGausianBlurSize = 3;
-    int mCvMorphologyKernelSize = 2;
+    int mNumberOfMarkers;
+    int mGausianBlurSize;
+    int mMorphologyKernelSize;
+
+    int mCvNumberOfMarkers;
+    int mCvGausianBlurSize;
+    int mCvMorphologyKernelSize;
 
     ImageService mImageService;
     ImageLoader mImageLoader;
@@ -46,13 +49,15 @@ private:
     // Processing state variables
     //  ===============================================
     std::future<cv::Mat> mTaskFuture;
-    bool mServiceIsProcessing = false;
+    double mDuration;
+    bool mServiceIsProcessing;
     std::string mWatershedMethod;
     std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
     std::chrono::time_point<std::chrono::high_resolution_clock> mEndTime;
-    double mDuration = 0.0;
 
 public:
+    Controller();
+    ~Controller() = default;
     // Polls for result when segmentation is running
     void update();
     // Renders window with GUI Elements
@@ -63,10 +68,13 @@ public:
     void renderSegmentedlImage(const sf::Vector2u& sfWindowSize);
 
 private:
+    // Generates output file with timestamp
+    static std::string generateTimestampPath();
     // Invokes service to load image
     void loadImage();
     // Invokes service to run manual implementation of watershed
     void runWatershedSegmentation();
     // Invokes service to run opencv implementation of watershed
     void runCvWatershedSegmentation();
+    void writeTime();
 };
