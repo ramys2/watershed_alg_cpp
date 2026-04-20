@@ -12,6 +12,7 @@
 #include "imgui-SFML.h"
 #include "nfd.hpp"
 #include "service/ImageService.hpp"
+#include "service/image_loader.hpp"
 
 Controller::Controller(const sf::Vector2u &sfWindowSize)
     : mNumberOfMarkers(2), mGausianBlurSize(3), mMorphologyKernelSize(2),
@@ -49,7 +50,7 @@ void Controller::loadImage()
         // outPath.get() gives you the const char*
         std::string pathToImg(outPath.get());
         // You can now use pathToImg for your logic
-        cv::Mat image = mImageLoader.loadImage(pathToImg);
+        cv::Mat image = image_loader::loadImage(pathToImg);
 
         if (image.empty())
         {

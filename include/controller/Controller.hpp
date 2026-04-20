@@ -6,7 +6,6 @@
 #include <chrono>
 
 #include "SFML/System/Vector2.hpp"
-#include "service/ImageLoader.hpp"
 #include "service/ImageService.hpp"
 #include "model/AppData.hpp"
 #include "imgui.h"
@@ -40,7 +39,6 @@ private:
     int mCvMorphologyKernelSize;
 
     ImageService mImageService;
-    ImageLoader mImageLoader;
 
     // ================================================
     // Image data model

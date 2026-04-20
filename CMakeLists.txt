@@ -43,7 +43,7 @@ add_executable(
     src/controller/Controller.cpp
     src/model/AppData.cpp
     src/service/ImageService.cpp
-    src/service/ImageLoader.cpp
+    src/service/image_loader.cpp
 )
 
 # 5. Tell the compiler where to find the .h headers
