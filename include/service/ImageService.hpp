@@ -6,7 +6,7 @@ class ImageService final
 {
 public:
     cv::Mat watershedSegmentation(const cv::Mat matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize);
-    cv::Mat cvWatershedSegmentation(const cv::Mat matrix);
+    cv::Mat cvWatershedSegmentation(const cv::Mat matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize);
 
 private:
     struct Pixel

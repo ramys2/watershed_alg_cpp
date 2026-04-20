@@ -54,8 +54,8 @@ void Controller::runWatershedSegmentation()
             return;
         }
 
-        mTaskThread = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix, mNumberOfMarkers, mGausianBlurSize, mMorphologyKernelSize);
         mAppData.setServiceIsProcessing(true);
+        mTaskFuture = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix, mNumberOfMarkers, mGausianBlurSize, mMorphologyKernelSize);
     }
 }
 
@@ -70,16 +70,16 @@ void Controller::runCvWatershedSegmentation()
             return;
         }
 
-        mTaskThread = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix);
         mAppData.setServiceIsProcessing(true);
+        mTaskFuture = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix, mCvNumberOfMarkers, mCvGausianBlurSize, mCvMorphologyKernelSize);
     }
 }
 
 void Controller::update()
 {
-    if (mAppData.serviceIsProcessing() && mTaskThread.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+    if (mAppData.serviceIsProcessing() && mTaskFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        cv::Mat result = mTaskThread.get();
+        cv::Mat result = mTaskFuture.get();
         mAppData.updateSegmentedImage(result);
         mAppData.setServiceIsProcessing(false);
     }
@@ -100,12 +100,8 @@ void Controller::renderGuiElements(const sf::Vector2u &sfWindowSize)
     {
         runWatershedSegmentation();
     }
-    if (ImGui::Button("Run opencv watershed"))
-    {
-        runCvWatershedSegmentation();
-    }
     ImGui::SliderInt("Markers", &mNumberOfMarkers, 2, 253);
-    if (ImGui::SliderInt("Gaussian Kernel Blur Size", &mGausianBlurSize, 3, 31))
+    if (ImGui::SliderInt("GBKS", &mGausianBlurSize, 3, 31))
     {
         if (mGausianBlurSize % 2 == 0)
         {
@@ -117,7 +113,28 @@ void Controller::renderGuiElements(const sf::Vector2u &sfWindowSize)
             mGausianBlurSize = 31;
         }
     }
-    ImGui::SliderInt("Morphology kernel size", &mMorphologyKernelSize, 2, 20);
+    ImGui::SliderInt("MKS", &mMorphologyKernelSize, 2, 20);
+
+    if (ImGui::Button("Run opencv watershed"))
+    {
+        runCvWatershedSegmentation();
+    }
+
+    ImGui::SliderInt("OpenCV Markers", &mCvNumberOfMarkers, 2, 253);
+    if (ImGui::SliderInt("OpenCV GBKS", &mCvGausianBlurSize, 3, 31))
+    {
+        if (mGausianBlurSize % 2 == 0)
+        {
+            mGausianBlurSize++;
+        }
+
+        if (mGausianBlurSize > 31)
+        {
+            mGausianBlurSize = 31;
+        }
+    }
+    ImGui::SliderInt("OpenCV MKS", &mCvMorphologyKernelSize, 2, 20);
+
     ImGui::End();
 }
 

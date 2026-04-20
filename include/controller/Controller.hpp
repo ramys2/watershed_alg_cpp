@@ -25,10 +25,14 @@ private:
     int mGausianBlurSize = 3;
     int mMorphologyKernelSize = 2;
 
+    int mCvNumberOfMarkers = 2;
+    int mCvGausianBlurSize = 3;
+    int mCvMorphologyKernelSize = 2;
+
     ImageService mImageService;
     ImageLoader mImageLoader;
     AppData mAppData;
-    std::future<cv::Mat> mTaskThread;
+    std::future<cv::Mat> mTaskFuture;
 
 public:
     // Polls for result when segmentation is running
