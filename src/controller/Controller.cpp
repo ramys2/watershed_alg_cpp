@@ -54,8 +54,8 @@ void Controller::runWatershedSegmentation()
             return;
         }
 
-        mTaskThread = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix, mNumberOfMarkers, mGausianBlurSize, mMorphologyKernelSize);
         mAppData.setServiceIsProcessing(true);
+        mTaskFuture = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix, mNumberOfMarkers, mGausianBlurSize, mMorphologyKernelSize);
     }
 }
 
@@ -70,16 +70,16 @@ void Controller::runCvWatershedSegmentation()
             return;
         }
 
-        mTaskThread = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix, mCvNumberOfMarkers, mCvGausianBlurSize, mCvMorphologyKernelSize);
         mAppData.setServiceIsProcessing(true);
+        mTaskFuture = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix, mCvNumberOfMarkers, mCvGausianBlurSize, mCvMorphologyKernelSize);
     }
 }
 
 void Controller::update()
 {
-    if (mAppData.serviceIsProcessing() && mTaskThread.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+    if (mAppData.serviceIsProcessing() && mTaskFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        cv::Mat result = mTaskThread.get();
+        cv::Mat result = mTaskFuture.get();
         mAppData.updateSegmentedImage(result);
         mAppData.setServiceIsProcessing(false);
     }
