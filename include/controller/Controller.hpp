@@ -37,8 +37,8 @@ private:
     AppData mAppData;
 
     std::future<cv::Mat> mTaskFuture;
-    bool mServiceIsProcessing;
-    std::string watershedMethod;
+    bool mServiceIsProcessing = false;
+    std::string mWatershedMethod;
     std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
     std::chrono::time_point<std::chrono::high_resolution_clock> mEndTime;
     double mDuration = 0.0;

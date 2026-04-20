@@ -54,6 +54,7 @@ void Controller::runWatershedSegmentation()
         }
 
         mServiceIsProcessing = true;
+        mWatershedMethod = "custom_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
         mTaskFuture = std::async(std::launch::async, &ImageService::watershedSegmentation, &mImageService, clonedMatrix, mNumberOfMarkers, mGausianBlurSize, mMorphologyKernelSize);
     }
@@ -71,6 +72,7 @@ void Controller::runCvWatershedSegmentation()
         }
 
         mServiceIsProcessing = true;
+        mWatershedMethod = "opencv_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
         mTaskFuture = std::async(std::launch::async, &ImageService::cvWatershedSegmentation, &mImageService, clonedMatrix, mCvNumberOfMarkers, mCvGausianBlurSize, mCvMorphologyKernelSize);
     }
@@ -94,6 +96,7 @@ void Controller::update()
         mStartTime = std::chrono::high_resolution_clock::time_point();
         mEndTime = std::chrono::high_resolution_clock::time_point();
         mDuration = 0.0;
+        mWatershedMethod = "";
     }
 }
 
