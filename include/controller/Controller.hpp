@@ -13,6 +13,9 @@
 class Controller final
 {
 private:
+    // ================================================
+    // UI components variables
+    //  ===============================================
     static constexpr ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoMove |
                                                     ImGuiWindowFlags_NoResize |
                                                     ImGuiWindowFlags_NoCollapse |
@@ -34,8 +37,14 @@ private:
     ImageService mImageService;
     ImageLoader mImageLoader;
 
+    // ================================================
+    // Image data model
+    //  ===============================================
     AppData mAppData;
 
+    // ================================================
+    // Processing state variables
+    //  ===============================================
     std::future<cv::Mat> mTaskFuture;
     bool mServiceIsProcessing = false;
     std::string mWatershedMethod;
@@ -46,8 +55,11 @@ private:
 public:
     // Polls for result when segmentation is running
     void update();
+    // Renders window with GUI Elements
     void renderGuiElements(const sf::Vector2u &sfWindowSize);
+    // Renders loaded image if it is available
     void renderOriginalImage(const sf::Vector2u& sfWindowSize);
+    // Render segmented image if it is avialable
     void renderSegmentedlImage(const sf::Vector2u& sfWindowSize);
 
 private:
