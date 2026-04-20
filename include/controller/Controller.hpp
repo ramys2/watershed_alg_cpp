@@ -2,6 +2,8 @@
 
 #include <future>
 #include <SFML/Config.hpp>
+#include <string>
+#include <chrono>
 
 #include "service/ImageLoader.hpp"
 #include "service/ImageService.hpp"
@@ -31,8 +33,15 @@ private:
 
     ImageService mImageService;
     ImageLoader mImageLoader;
+
     AppData mAppData;
+
     std::future<cv::Mat> mTaskFuture;
+    bool mServiceIsProcessing;
+    std::string watershedMethod;
+    std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
+    std::chrono::time_point<std::chrono::high_resolution_clock> mEndTime;
+    double mDuration = 0.0;
 
 public:
     // Polls for result when segmentation is running

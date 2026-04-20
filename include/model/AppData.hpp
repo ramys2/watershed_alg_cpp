@@ -10,7 +10,6 @@ private:
     cv::Mat mSegmentedMatrix;
     sf::Texture mOriginalTexture;
     sf::Texture mSegmentedTexture;
-    bool mServiceIsProcessing;
 
 public:
     const cv::Mat &getOriginalMatrix() const { return mOriginalMatrix; }
@@ -21,8 +20,4 @@ public:
     void updateOriginalImage(const cv::Mat &matrix);
     // Updates Matrix and corresponding sf::Texture
     void updateSegmentedImage(const cv::Mat &matrix);
-    // Returns if service is running
-    bool serviceIsProcessing() const { return mServiceIsProcessing; }
-    // Sets service state
-    void setServiceIsProcessing(bool isProcessing) { mServiceIsProcessing = isProcessing; }
 };
