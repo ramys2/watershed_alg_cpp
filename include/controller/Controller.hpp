@@ -5,8 +5,8 @@
 #include <string>
 #include <chrono>
 
-#include "service/ImageLoader.hpp"
-#include "service/ImageService.hpp"
+#include "SFML/System/Vector2.hpp"
+#include "service/image_service.hpp"
 #include "model/AppData.hpp"
 #include "imgui.h"
 
@@ -27,8 +27,9 @@ private:
 
     const std::string mOutputfilePath;
 
-    float mOrgImgW;
+    sf::Vector2u mWindowSize;
 
+    float mOrgImgW;
     int mNumberOfMarkers;
     int mGausianBlurSize;
     int mMorphologyKernelSize;
@@ -36,9 +37,6 @@ private:
     int mCvNumberOfMarkers;
     int mCvGausianBlurSize;
     int mCvMorphologyKernelSize;
-
-    ImageService mImageService;
-    ImageLoader mImageLoader;
 
     // ================================================
     // Image data model
@@ -56,16 +54,19 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> mEndTime;
 
 public:
-    Controller();
+    Controller(const sf::Vector2u &sfWindowSize);
     ~Controller() = default;
     // Polls for result when segmentation is running
     void update();
     // Renders window with GUI Elements
-    void renderGuiElements(const sf::Vector2u &sfWindowSize);
+    void renderGuiElements();
     // Renders loaded image if it is available
-    void renderOriginalImage(const sf::Vector2u& sfWindowSize);
+    void renderOriginalImage();
     // Render segmented image if it is avialable
-    void renderSegmentedlImage(const sf::Vector2u& sfWindowSize);
+    void renderSegmentedlImage();
+
+    const sf::Vector2u& getWindowSize() const { return mWindowSize; }
+    void setWindowSize(const sf::Vector2u &sfWindowSize) { mWindowSize = sfWindowSize; }
 
 private:
     // Generates output file with timestamp

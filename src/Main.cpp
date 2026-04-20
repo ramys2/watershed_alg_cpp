@@ -24,11 +24,11 @@ int main()
         return -1;
 
     sf::Clock deltaClock;
-    Controller controller;
+    sf::Vector2u windowSize = window.getSize();
+    Controller controller(windowSize);
     while (window.isOpen())
     {
         sf::Event event;
-        sf::Vector2u windowSize = window.getSize();
         while (window.pollEvent(event))
         {
             ImGui::SFML::ProcessEvent(window, event);
@@ -36,11 +36,16 @@ int main()
                 window.close();
         }
 
+        windowSize = window.getSize();
+        if (controller.getWindowSize() != windowSize)
+        {
+            controller.setWindowSize(windowSize);
+        }
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        controller.renderGuiElements(windowSize);
-        controller.renderOriginalImage(windowSize);
-        controller.renderSegmentedlImage(windowSize);
+        controller.renderGuiElements();
+        controller.renderOriginalImage();
+        controller.renderSegmentedlImage();
 
         controller.update();
 
