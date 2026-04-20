@@ -69,6 +69,9 @@ public:
     // Render segmented image if it is avialable
     void renderSegmentedlImage();
 
+    const sf::Vector2u& getWindowSize() const { return mWindowSize; }
+    void setWindowSize(const sf::Vector2u &sfWindowSize) { mWindowSize = sfWindowSize; }
+
 private:
     // Generates output file with timestamp
     static std::string generateTimestampPath();

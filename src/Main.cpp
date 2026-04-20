@@ -36,6 +36,11 @@ int main()
                 window.close();
         }
 
+        windowSize = window.getSize();
+        if (controller.getWindowSize() != windowSize)
+        {
+            controller.setWindowSize(windowSize);
+        }
         ImGui::SFML::Update(window, deltaClock.restart());
 
         controller.renderGuiElements();
