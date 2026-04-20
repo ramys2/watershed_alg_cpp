@@ -7,4 +7,4 @@ namespace image_loader
 {
     // Loads new image and returns it's matrix
     cv::Mat loadImage(const std::string &pathToImg);
-};
+}

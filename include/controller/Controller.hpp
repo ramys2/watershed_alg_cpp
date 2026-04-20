@@ -6,7 +6,7 @@
 #include <chrono>
 
 #include "SFML/System/Vector2.hpp"
-#include "service/ImageService.hpp"
+#include "service/image_service.hpp"
 #include "model/AppData.hpp"
 #include "imgui.h"
 
@@ -37,8 +37,6 @@ private:
     int mCvNumberOfMarkers;
     int mCvGausianBlurSize;
     int mCvMorphologyKernelSize;
-
-    ImageService mImageService;
 
     // ================================================
     // Image data model

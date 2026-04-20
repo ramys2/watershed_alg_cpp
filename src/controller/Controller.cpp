@@ -11,7 +11,7 @@
 
 #include "imgui-SFML.h"
 #include "nfd.hpp"
-#include "service/ImageService.hpp"
+#include "service/image_service.hpp"
 #include "service/image_loader.hpp"
 
 Controller::Controller(const sf::Vector2u &sfWindowSize)
@@ -84,8 +84,8 @@ void Controller::runWatershedSegmentation()
         mWatershedMethod = "custom_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
         mTaskFuture =
-            std::async(std::launch::async, &ImageService::watershedSegmentation,
-                       &mImageService, clonedMatrix, mNumberOfMarkers,
+            std::async(std::launch::async, &image_service::watershedSegmentation,
+                       clonedMatrix, mNumberOfMarkers,
                        mGausianBlurSize, mMorphologyKernelSize);
     }
 }
@@ -105,8 +105,7 @@ void Controller::runCvWatershedSegmentation()
         mWatershedMethod = "opencv_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
         mTaskFuture = std::async(
-            std::launch::async, &ImageService::cvWatershedSegmentation,
-            &mImageService, clonedMatrix, mCvNumberOfMarkers,
+            std::launch::async, &image_service::cvWatershedSegmentation, clonedMatrix, mCvNumberOfMarkers,
             mCvGausianBlurSize, mCvMorphologyKernelSize);
     }
 }

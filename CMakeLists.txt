@@ -42,7 +42,7 @@ add_executable(
     src/Main.cpp
     src/controller/Controller.cpp
     src/model/AppData.cpp
-    src/service/ImageService.cpp
+    src/service/image_service.cpp
     src/service/image_loader.cpp
 )
 
