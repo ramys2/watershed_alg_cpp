@@ -1,6 +1,6 @@
-#include "model/AppData.hpp"
+#include "model/ImageData.hpp"
 
-void AppData::updateOriginalImage(const cv::Mat &matrix)
+void ImageData::updateOriginalImage(const cv::Mat &matrix)
 {
     mOriginalMatrix = matrix.clone();
 
@@ -12,7 +12,7 @@ void AppData::updateOriginalImage(const cv::Mat &matrix)
     mOriginalTexture.update(mOriginalMatrix.data);
 }
 
-void AppData::updateSegmentedImage(const cv::Mat &matrix)
+void ImageData::updateSegmentedImage(const cv::Mat &matrix)
 {
     mSegmentedMatrix = matrix.clone();
 

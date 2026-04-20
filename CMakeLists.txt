@@ -41,7 +41,7 @@ add_executable(
     ${NFD_SOURCES}
     src/Main.cpp
     src/controller/Controller.cpp
-    src/model/AppData.cpp
+    src/model/ImageData.cpp
     src/service/image_service.cpp
     src/service/image_loader.cpp
 )
