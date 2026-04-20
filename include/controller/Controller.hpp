@@ -7,7 +7,7 @@
 
 #include "SFML/System/Vector2.hpp"
 #include "service/image_service.hpp"
-#include "model/AppData.hpp"
+#include "model/ImageData.hpp"
 #include "imgui.h"
 
 class Controller final
@@ -41,7 +41,7 @@ private:
     // ================================================
     // Image data model
     //  ===============================================
-    AppData mAppData;
+    ImageData mAppData;
 
     // ================================================
     // Processing state variables

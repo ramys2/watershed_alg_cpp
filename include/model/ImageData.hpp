@@ -3,7 +3,7 @@
 #include <opencv2/core.hpp>
 #include <SFML/Graphics.hpp>
 
-class AppData final
+class ImageData final
 {
 private:
     cv::Mat mOriginalMatrix;
