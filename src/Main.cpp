@@ -45,6 +45,7 @@ int main()
 
         controller.renderGuiElements();
         controller.renderImgWindows();
+        controller.processWinEvents();
 
         controller.update();
 

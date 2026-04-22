@@ -224,23 +224,6 @@ void Controller::renderImgWindow(sf::RenderWindow& window, const sf::Texture& te
     // 2. RENDERING & EVENTS: Only run if the window is currently open
     if (window.isOpen())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-                if (&texture == &mAppData.getOriginalTexture())
-                {
-                    mAppData.resetOriginalImage();
-                }
-                else
-                {
-                    mAppData.resetSegmentedImage();
-                }
-            }
-        }
-
         if (hasTexture)
         {
             window.clear(sf::Color::Black);
@@ -257,6 +240,32 @@ void Controller::renderImgWindow(sf::RenderWindow& window, const sf::Texture& te
 
             window.draw(s);
             window.display();
+        }
+    }
+}
+
+void Controller::processWinEvents()
+{
+    processWinEvent(mOriginalImgWin, mAppData.getOriginalTexture());
+    processWinEvent(mSegmentedImgWin, mAppData.getSegmentedTexture());
+}
+
+void Controller::processWinEvent(sf::RenderWindow& window, const sf::Texture& texture)
+{
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed)
+        {
+            window.close();
+            if (&texture == &mAppData.getOriginalTexture())
+            {
+                mAppData.resetOriginalImage();
+            }
+            else
+            {
+                mAppData.resetSegmentedImage();
+            }
         }
     }
 }

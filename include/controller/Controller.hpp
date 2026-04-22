@@ -67,6 +67,7 @@ public:
 
     // Renders windows with loaded and segmented image if they are avialable
     void renderImgWindows();
+    void processWinEvents();
 
     const sf::Vector2u& getWindowSize() const { return mWindowSize; }
     void setWindowSize(const sf::Vector2u &sfWindowSize) { mWindowSize = sfWindowSize; }
@@ -82,4 +83,5 @@ private:
     void runCvWatershedSegmentation();
     void writeTime();
     void renderImgWindow(sf::RenderWindow& window, const sf::Texture& texture);
+    void processWinEvent(sf::RenderWindow& window, const sf::Texture& texture);
 };
