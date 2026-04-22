@@ -58,7 +58,7 @@ void Controller::loadImage()
 
         if (mSegmentedImgWin.isOpen())
         {
-            mOriginalImgWin.close();
+            mSegmentedImgWin.close();
             mAppData.resetSegmentedImage();
         }
 
@@ -205,90 +205,51 @@ void Controller::renderGuiElements()
     ImGui::End();
 }
 
-void Controller::renderOriginalImage()
+void Controller::renderImgWindows()
 {
-    const sf::Texture &texture = mAppData.getOriginalTexture();
-    bool hasTexture = (texture.getSize().x != 0);
-
-    if (hasTexture && !mOriginalImgWin.isOpen())
-    {
-        mOriginalImgWin.create(sf::VideoMode(1280, 720),
-                               "High-Res Original View");
-    }
-
-    // 2. RENDERING & EVENTS: Only run if the window is currently open
-    if (mOriginalImgWin.isOpen())
-    {
-        sf::Event event;
-        while (mOriginalImgWin.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                mOriginalImgWin.close();
-                mAppData.resetOriginalImage();
-            }
-        }
-
-        if (hasTexture)
-        {
-            mOriginalImgWin.clear(sf::Color::Black);
-
-            sf::Sprite s(texture);
-
-            // Scaled to fit for high-res handling
-            float scale =
-                std::min(static_cast<float>(mOriginalImgWin.getSize().x) /
-                             texture.getSize().x,
-                         static_cast<float>(mOriginalImgWin.getSize().y) /
-                             texture.getSize().y);
-            s.setScale(scale, scale);
-
-            mOriginalImgWin.draw(s);
-            mOriginalImgWin.display();
-        }
-    }
+    renderImgWindow(mOriginalImgWin, mAppData.getOriginalTexture());
+    renderImgWindow(mSegmentedImgWin, mAppData.getSegmentedTexture());
 }
 
-void Controller::renderSegmentedlImage()
+void Controller::renderImgWindow(sf::RenderWindow& window, const sf::Texture& texture)
 {
-    const sf::Texture &texture = mAppData.getSegmentedTexture();
     bool hasTexture = (texture.getSize().x != 0);
 
-    if (hasTexture && !mSegmentedImgWin.isOpen())
+    if (hasTexture && !window.isOpen())
     {
-        mSegmentedImgWin.create(sf::VideoMode(1280, 720),
+        window.create(sf::VideoMode(1280, 720),
                                "High-Res Original View");
     }
 
     // 2. RENDERING & EVENTS: Only run if the window is currently open
-    if (mSegmentedImgWin.isOpen())
+    if (window.isOpen())
     {
         sf::Event event;
-        while (mSegmentedImgWin.pollEvent(event))
+        while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
             {
-                mSegmentedImgWin.close();
-                mAppData.resetSegmentedImage();
+                window.close();
+                // TODO: implement reseting model based on given texture
             }
         }
 
         if (hasTexture)
         {
-            mSegmentedImgWin.clear(sf::Color::Black);
+            window.clear(sf::Color::Black);
 
             sf::Sprite s(texture);
 
             // Scaled to fit for high-res handling
             float scale =
-                std::min(static_cast<float>(mSegmentedImgWin.getSize().x) /
+                std::min(static_cast<float>(window.getSize().x) /
                              texture.getSize().x,
-                         static_cast<float>(mSegmentedImgWin.getSize().y) /
+                         static_cast<float>(window.getSize().y) /
                              texture.getSize().y);
             s.setScale(scale, scale);
 
-            mSegmentedImgWin.draw(s);
-            mSegmentedImgWin.display();
+            window.draw(s);
+            window.display();
         }
     }
 }

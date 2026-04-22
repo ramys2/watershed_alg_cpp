@@ -44,8 +44,7 @@ int main()
         ImGui::SFML::Update(window, deltaClock.restart());
 
         controller.renderGuiElements();
-        controller.renderOriginalImage();
-        controller.renderSegmentedlImage();
+        controller.renderImgWindows();
 
         controller.update();
 
