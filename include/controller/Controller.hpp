@@ -5,6 +5,7 @@
 #include <string>
 #include <chrono>
 
+#include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "service/image_service.hpp"
 #include "model/ImageData.hpp"
@@ -41,6 +42,7 @@ private:
     // ================================================
     // Image data model
     //  ===============================================
+    sf::RenderWindow mOriginalImgWin;
     ImageData mAppData;
 
     // ================================================

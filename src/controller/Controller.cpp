@@ -6,13 +6,16 @@
 #include <future>
 #include <iostream>
 #include <opencv2/core.hpp>
+#include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <string>
 
+#include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/Graphics/Sprite.hpp"
 #include "imgui-SFML.h"
 #include "nfd.hpp"
-#include "service/image_service.hpp"
 #include "service/image_loader.hpp"
+#include "service/image_service.hpp"
 
 Controller::Controller(const sf::Vector2u &sfWindowSize)
     : mNumberOfMarkers(2), mGausianBlurSize(3), mMorphologyKernelSize(2),
@@ -83,10 +86,10 @@ void Controller::runWatershedSegmentation()
         mServiceIsProcessing = true;
         mWatershedMethod = "custom_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
-        mTaskFuture =
-            std::async(std::launch::async, &image_service::watershedSegmentation,
-                       clonedMatrix, mNumberOfMarkers,
-                       mGausianBlurSize, mMorphologyKernelSize);
+        mTaskFuture = std::async(std::launch::async,
+                                 &image_service::watershedSegmentation,
+                                 clonedMatrix, mNumberOfMarkers,
+                                 mGausianBlurSize, mMorphologyKernelSize);
     }
 }
 
@@ -104,9 +107,10 @@ void Controller::runCvWatershedSegmentation()
         mServiceIsProcessing = true;
         mWatershedMethod = "opencv_watershed";
         mStartTime = std::chrono::high_resolution_clock::now();
-        mTaskFuture = std::async(
-            std::launch::async, &image_service::cvWatershedSegmentation, clonedMatrix, mCvNumberOfMarkers,
-            mCvGausianBlurSize, mCvMorphologyKernelSize);
+        mTaskFuture = std::async(std::launch::async,
+                                 &image_service::cvWatershedSegmentation,
+                                 clonedMatrix, mCvNumberOfMarkers,
+                                 mCvGausianBlurSize, mCvMorphologyKernelSize);
     }
 }
 
@@ -192,17 +196,44 @@ void Controller::renderGuiElements()
 void Controller::renderOriginalImage()
 {
     const sf::Texture &texture = mAppData.getOriginalTexture();
-    if (texture.getSize().x != 0 && texture.getSize().y != 0)
-    {
-        mOrgImgW = (static_cast<float>(mWindowSize.x) - CONTROL_PANEL_W) / 2;
-        ImGui::SetNextWindowPos(ORIGINAL_IMG_POSITION, ImGuiCond_Always);
-        ImGui::SetNextWindowSize(
-            ImVec2(mOrgImgW, static_cast<float>(mWindowSize.y)),
-            ImGuiCond_Always);
+    bool hasTexture = (texture.getSize().x != 0);
 
-        ImGui::Begin("Original Image", nullptr, WINDOW_FLAGS);
-        ImGui::Image(texture);
-        ImGui::End();
+    if (hasTexture && !mOriginalImgWin.isOpen())
+    {
+        mOriginalImgWin.create(sf::VideoMode(1280, 720),
+                               "High-Res Original View");
+    }
+
+    // 2. RENDERING & EVENTS: Only run if the window is currently open
+    if (mOriginalImgWin.isOpen())
+    {
+        sf::Event event;
+        while (mOriginalImgWin.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                mOriginalImgWin.close();
+                mAppData.resetOriginalImage();
+            }
+        }
+
+        if (hasTexture)
+        {
+            mOriginalImgWin.clear(sf::Color::Black);
+
+            sf::Sprite s(texture);
+
+            // Scaled to fit for high-res handling
+            float scale =
+                std::min(static_cast<float>(mOriginalImgWin.getSize().x) /
+                             texture.getSize().x,
+                         static_cast<float>(mOriginalImgWin.getSize().y) /
+                             texture.getSize().y);
+            s.setScale(scale, scale);
+
+            mOriginalImgWin.draw(s);
+            mOriginalImgWin.display();
+        }
     }
 }
 
