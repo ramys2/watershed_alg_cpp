@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.14) # Verze 3.14+ je nutná pro FetchContent_MakeAvailable
 project(watershed_alg)
 
-# 1. Globální nastavení
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -9,10 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 include(FetchContent)
 
 # -------------------------------------------------------------------
-# 2. Externí závislosti přes FetchContent (Místo složky libs/)
+# 2. External dependancies
 # -------------------------------------------------------------------
 
-# 1. Core ImGui (This is the missing piece)
+# 1. Core ImGui
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
@@ -34,29 +33,29 @@ FetchContent_Declare(
     GIT_TAG        v2.6
 )
 
-# IMPORTANT: Tell ImGui-SFML where the core ImGui files are located
 set(IMGUI_DIR ${imgui_SOURCE_DIR} CACHE PATH "Path to ImGui" FORCE)
 
-# Now make SFML and the wrapper available
 FetchContent_MakeAvailable(sfml imgui-sfml)
 
+FetchContent_Declare(
+    nfd
+    GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+    GIT_TAG        master
+)
+
+FetchContent_MakeAvailable(nfd)
+
 # -------------------------------------------------------------------
-# 3. Systémové balíčky (OpenCV a GTK)
+# 3. Systémové packages (OpenCV + GTK)
 # -------------------------------------------------------------------
+
 find_package(OpenCV REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED IMPORTED_TARGET gtk+-3.0)
 
 # -------------------------------------------------------------------
-# 4. Definice spustitelného souboru
+# 4. Definition of executable
 # -------------------------------------------------------------------
-
-# NFD si zatím necháme jako lokální soubory, pokud pro něj nemáš CMake balíček
-set(NFD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/static/nfd")
-set(NFD_SOURCES
-    ${NFD_DIR}/nfd_gtk.cpp
-    # ${NFD_DIR}/nfd_common.c # Odkomentuj, pokud dostaneš "undefined reference"
-)
 
 add_executable(watershed_app
     src/Main.cpp
@@ -68,7 +67,7 @@ add_executable(watershed_app
 )
 
 # -------------------------------------------------------------------
-# 5. Inkluze a Linkování
+# 5. Inclusion and linking
 # -------------------------------------------------------------------
 
 # SFML a ImGui-SFML si hlavičky spravují samy přes targety (netřeba je sem psát)
@@ -80,15 +79,12 @@ target_include_directories(watershed_app PUBLIC
 
 target_link_libraries(watershed_app
     PRIVATE
-    # Místo libsfml-graphics.so používáme logické jméno targetu [cite: 2, 3]
     sfml-graphics
     sfml-window
     sfml-system
     ImGui-SFML::ImGui-SFML
     ${OpenCV_LIBS}
+    nfd
     PkgConfig::GTK3
     GL
 )
-
-# Poznámka: RPATH a link_directories pro SFML už nejsou potřeba,
-# protože se SFML kompiluje přímo jako součást tvého projektu.
