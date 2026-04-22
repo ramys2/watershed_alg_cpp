@@ -1,4 +1,5 @@
 #include "model/ImageData.hpp"
+#include <opencv2/core/mat.hpp>
 
 void ImageData::updateOriginalImage(const cv::Mat &matrix)
 {
@@ -22,4 +23,16 @@ void ImageData::updateSegmentedImage(const cv::Mat &matrix)
     }
 
     mSegmentedTexture.update(mSegmentedMatrix.data);
+}
+
+void ImageData::resetOriginalImage()
+{
+    mOriginalMatrix = cv::Mat();
+    mOriginalTexture = sf::Texture();
+}
+
+void ImageData::resetSegmentedImage()
+{
+    mSegmentedMatrix = cv::Mat();
+    mSegmentedTexture = sf::Texture();
 }

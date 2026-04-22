@@ -5,6 +5,8 @@
 #include <string>
 #include <chrono>
 
+#include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "service/image_service.hpp"
 #include "model/ImageData.hpp"
@@ -42,6 +44,8 @@ private:
     // Image data model
     //  ===============================================
     ImageData mAppData;
+    sf::RenderWindow mOriginalImgWin;
+    sf::RenderWindow mSegmentedImgWin;
 
     // ================================================
     // Processing state variables
@@ -60,10 +64,10 @@ public:
     void update();
     // Renders window with GUI Elements
     void renderGuiElements();
-    // Renders loaded image if it is available
-    void renderOriginalImage();
-    // Render segmented image if it is avialable
-    void renderSegmentedlImage();
+
+    // Renders windows with loaded and segmented image if they are avialable
+    void renderImgWindows();
+    void processWinEvents();
 
     const sf::Vector2u& getWindowSize() const { return mWindowSize; }
     void setWindowSize(const sf::Vector2u &sfWindowSize) { mWindowSize = sfWindowSize; }
@@ -78,4 +82,6 @@ private:
     // Invokes service to run opencv implementation of watershed
     void runCvWatershedSegmentation();
     void writeTime();
+    void renderImgWindow(sf::RenderWindow& window, const sf::Texture& texture);
+    void processWinEvent(sf::RenderWindow& window, const sf::Texture& texture);
 };
