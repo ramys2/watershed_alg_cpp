@@ -42,8 +42,9 @@ private:
     // ================================================
     // Image data model
     //  ===============================================
-    sf::RenderWindow mOriginalImgWin;
     ImageData mAppData;
+    sf::RenderWindow mOriginalImgWin;
+    sf::RenderWindow mSegmentedImgWin;
 
     // ================================================
     // Processing state variables

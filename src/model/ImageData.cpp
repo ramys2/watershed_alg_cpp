@@ -30,3 +30,9 @@ void ImageData::resetOriginalImage()
     mOriginalMatrix = cv::Mat();
     mOriginalTexture = sf::Texture();
 }
+
+void ImageData::resetSegmentedImage()
+{
+    mSegmentedMatrix = cv::Mat();
+    mSegmentedTexture = sf::Texture();
+}

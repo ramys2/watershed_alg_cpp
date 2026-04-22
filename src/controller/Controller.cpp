@@ -50,6 +50,18 @@ void Controller::loadImage()
 
     if (result == NFD_OKAY)
     {
+        if (mOriginalImgWin.isOpen())
+        {
+            mOriginalImgWin.close();
+            mAppData.resetOriginalImage();
+        }
+
+        if (mSegmentedImgWin.isOpen())
+        {
+            mOriginalImgWin.close();
+            mAppData.resetSegmentedImage();
+        }
+
         // outPath.get() gives you the const char*
         std::string pathToImg(outPath.get());
         // You can now use pathToImg for your logic
@@ -240,20 +252,44 @@ void Controller::renderOriginalImage()
 void Controller::renderSegmentedlImage()
 {
     const sf::Texture &texture = mAppData.getSegmentedTexture();
-    if (texture.getSize().x != 0 && texture.getSize().y != 0)
+    bool hasTexture = (texture.getSize().x != 0);
+
+    if (hasTexture && !mSegmentedImgWin.isOpen())
     {
-        float segImgW =
-            static_cast<float>(mWindowSize.x) - CONTROL_PANEL_W - mOrgImgW;
-        float segImgX = mOrgImgW + CONTROL_PANEL_W;
+        mSegmentedImgWin.create(sf::VideoMode(1280, 720),
+                               "High-Res Original View");
+    }
 
-        ImGui::SetNextWindowPos(ImVec2(segImgX, 0), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(
-            ImVec2(segImgW, static_cast<float>(mWindowSize.y)),
-            ImGuiCond_Always);
+    // 2. RENDERING & EVENTS: Only run if the window is currently open
+    if (mSegmentedImgWin.isOpen())
+    {
+        sf::Event event;
+        while (mSegmentedImgWin.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                mSegmentedImgWin.close();
+                mAppData.resetSegmentedImage();
+            }
+        }
 
-        ImGui::Begin("Segmented Image", nullptr, WINDOW_FLAGS);
-        ImGui::Image(texture);
-        ImGui::End();
+        if (hasTexture)
+        {
+            mSegmentedImgWin.clear(sf::Color::Black);
+
+            sf::Sprite s(texture);
+
+            // Scaled to fit for high-res handling
+            float scale =
+                std::min(static_cast<float>(mSegmentedImgWin.getSize().x) /
+                             texture.getSize().x,
+                         static_cast<float>(mSegmentedImgWin.getSize().y) /
+                             texture.getSize().y);
+            s.setScale(scale, scale);
+
+            mSegmentedImgWin.draw(s);
+            mSegmentedImgWin.display();
+        }
     }
 }
 
