@@ -190,14 +190,14 @@ void Controller::renderGuiElements()
     ImGui::SliderInt("OpenCV Markers", &mCvNumberOfMarkers, 2, 253);
     if (ImGui::SliderInt("OpenCV GBKS", &mCvGausianBlurSize, 3, 31))
     {
-        if (mGausianBlurSize % 2 == 0)
+        if (mCvGausianBlurSize % 2 == 0)
         {
-            mGausianBlurSize++;
+            mCvGausianBlurSize++;
         }
 
-        if (mGausianBlurSize > 31)
+        if (mCvGausianBlurSize > 31)
         {
-            mGausianBlurSize = 31;
+            mCvGausianBlurSize = 31;
         }
     }
     ImGui::SliderInt("OpenCV MKS", &mCvMorphologyKernelSize, 2, 20);
@@ -230,7 +230,14 @@ void Controller::renderImgWindow(sf::RenderWindow& window, const sf::Texture& te
             if (event.type == sf::Event::Closed)
             {
                 window.close();
-                // TODO: implement reseting model based on given texture
+                if (&texture == &mAppData.getOriginalTexture())
+                {
+                    mAppData.resetOriginalImage();
+                }
+                else
+                {
+                    mAppData.resetSegmentedImage();
+                }
             }
         }
 
