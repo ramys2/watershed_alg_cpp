@@ -284,7 +284,7 @@ std::string Controller::generateTimestampPath()
 
     std::stringstream ss;
     ss << std::put_time(std::localtime(&now_time), "%Y%m%d%H%M%S");
-    return OUTPUT_DIR + "segmentation_runtime_" + ss.str() + ".csv";
+    return OUTPUT_DIR + "segmentation_runtime_cpp" + ss.str() + ".csv";
 }
 
 void Controller::writeTime()
