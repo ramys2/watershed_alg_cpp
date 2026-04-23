@@ -37,6 +37,13 @@ Controller::Controller(const sf::Vector2u &sfWindowSize)
         // Handle potential permission issues or disk errors
         std::cerr << "Error creating directory: " << e.what() << std::endl;
     }
+
+    std::ofstream file(mOutputfilePath, std::ios::app);
+    if (file.is_open())
+    {
+        file << "watershed_method, image_resolution, time_to_run\n";
+        file.close();
+    }
 }
 
 void Controller::loadImage()
