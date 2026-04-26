@@ -20,4 +20,7 @@ public:
     void updateOriginalImage(const cv::Mat &matrix);
     // Updates Matrix and corresponding sf::Texture
     void updateSegmentedImage(const cv::Mat &matrix);
+
+    void resetOriginalImage();
+    void resetSegmentedImage();
 };
