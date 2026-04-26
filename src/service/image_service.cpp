@@ -97,7 +97,7 @@ namespace
 
 namespace image_service
 {
-    cv::Mat watershedSegmentation(const cv::Mat matrix,
+    cv::Mat watershedSegmentation(const cv::Mat &matrix,
                                                 const int max_markers,
                                                 const int gaussianBlurMatrixSize,
                                                 const int kernelMatrixSize)
@@ -161,7 +161,7 @@ namespace image_service
         return postProcessingForCustomWS(grayscaleImg, markers);
     }
 
-    cv::Mat cvWatershedSegmentation(const cv::Mat matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
+    cv::Mat cvWatershedSegmentation(const cv::Mat &matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
     {
         // 1. Convert to Grayscale & Blur (Essential to avoid noise seeds)
         cv::Mat gray, blurred;

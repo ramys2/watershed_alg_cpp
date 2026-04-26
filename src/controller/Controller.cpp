@@ -3,6 +3,7 @@
 #include <chrono>
 #include <filesystem>
 #include <future>
+#include <format>
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/core/mat.hpp>
@@ -89,10 +90,12 @@ void Controller::loadImage()
     }
     else if (result == NFD_CANCEL)
     {
+        std::cout << "Load image operation was cancelled!" << std::endl;
         return;
     }
     else
     {
+        std::cout << "Something went wrong when loading image!" << std::endl;
         return;
     }
 }
@@ -271,7 +274,7 @@ void Controller::processWinEvent(sf::RenderWindow& window, const sf::Texture& te
         if (event.type == sf::Event::Closed)
         {
             window.close();
-            if (&texture == &mAppData.getOriginalTexture())
+            if (texture.getNativeHandle() == mAppData.getOriginalTexture().getNativeHandle())
             {
                 mAppData.resetOriginalImage();
             }
@@ -286,11 +289,9 @@ void Controller::processWinEvent(sf::RenderWindow& window, const sf::Texture& te
 std::string Controller::generateTimestampPath()
 {
     auto now = std::chrono::system_clock::now();
-    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&now_time), "%Y%m%d%H%M%S");
-    return OUTPUT_DIR + "segmentation_runtime_cpp" + ss.str() + ".csv";
+    return std::format("{}/segmentation_runtime_cpp{:%Y%m%d%H%M%S}.csv",
+                       OUTPUT_DIR, now);
 }
 
 void Controller::writeTime()

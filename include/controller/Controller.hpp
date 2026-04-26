@@ -4,7 +4,6 @@
 #include <future>
 #include <SFML/Config.hpp>
 #include <string>
-#include <chrono>
 
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Texture.hpp"
