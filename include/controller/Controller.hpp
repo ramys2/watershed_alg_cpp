@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 #include <future>
 #include <SFML/Config.hpp>
 #include <string>
@@ -27,7 +28,7 @@ private:
     static constexpr ImVec2 ORIGINAL_IMG_POSITION = ImVec2(CONTROL_PANEL_W, 0);
     static constexpr std::string OUTPUT_DIR = "statistics/";
 
-    const std::string mOutputfilePath;
+    std::ofstream mFile;
 
     sf::Vector2u mWindowSize;
 
@@ -59,7 +60,7 @@ private:
 
 public:
     Controller(const sf::Vector2u &sfWindowSize);
-    ~Controller() = default;
+    ~Controller();
     // Polls for result when segmentation is running
     void update();
     // Renders window with GUI Elements

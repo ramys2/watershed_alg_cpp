@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <filesystem>
-#include <fstream>
 #include <future>
 #include <iostream>
 #include <opencv2/core.hpp>
@@ -21,7 +20,7 @@ Controller::Controller(const sf::Vector2u &sfWindowSize)
     : mNumberOfMarkers(2), mGausianBlurSize(3), mMorphologyKernelSize(2),
       mCvNumberOfMarkers(2), mCvGausianBlurSize(3), mCvMorphologyKernelSize(2),
       mServiceIsProcessing(false), mDuration(0.0), mWatershedMethod(""),
-      mOutputfilePath(generateTimestampPath()), mWindowSize(sfWindowSize)
+      mWindowSize(sfWindowSize)
 {
     std::filesystem::path dir(OUTPUT_DIR);
 
@@ -38,11 +37,18 @@ Controller::Controller(const sf::Vector2u &sfWindowSize)
         std::cerr << "Error creating directory: " << e.what() << std::endl;
     }
 
-    std::ofstream file(mOutputfilePath, std::ios::app);
-    if (file.is_open())
+    mFile = std::ofstream(generateTimestampPath());
+    if (mFile.is_open())
     {
-        file << "watershed_method, image_resolution, time_to_run\n";
-        file.close();
+        mFile << "watershed_method, image_resolution, time_to_run\n";
+    }
+}
+
+Controller::~Controller()
+{
+    if (mFile.is_open())
+    {
+        mFile.close();
     }
 }
 
@@ -289,13 +295,11 @@ std::string Controller::generateTimestampPath()
 
 void Controller::writeTime()
 {
-    std::ofstream file(mOutputfilePath, std::ios::app);
     int rows = mAppData.getSegmentedMatrix().rows;
     int cols = mAppData.getSegmentedMatrix().cols;
-    if (file.is_open())
+    if (mFile.is_open())
     {
-        file << mWatershedMethod << ", " << cols << "x" << rows << ", "
+        mFile << mWatershedMethod << ", " << cols << "x" << rows << ", "
              << mDuration << "\n";
-        file.close();
     }
 }
