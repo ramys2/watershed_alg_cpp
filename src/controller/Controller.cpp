@@ -2,8 +2,8 @@
 
 #include <chrono>
 #include <filesystem>
-#include <fstream>
 #include <future>
+#include <format>
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/core/mat.hpp>
@@ -21,7 +21,7 @@ Controller::Controller(const sf::Vector2u &sfWindowSize)
     : mNumberOfMarkers(2), mGausianBlurSize(3), mMorphologyKernelSize(2),
       mCvNumberOfMarkers(2), mCvGausianBlurSize(3), mCvMorphologyKernelSize(2),
       mServiceIsProcessing(false), mDuration(0.0), mWatershedMethod(""),
-      mOutputfilePath(generateTimestampPath()), mWindowSize(sfWindowSize)
+      mWindowSize(sfWindowSize)
 {
     std::filesystem::path dir(OUTPUT_DIR);
 
@@ -38,11 +38,18 @@ Controller::Controller(const sf::Vector2u &sfWindowSize)
         std::cerr << "Error creating directory: " << e.what() << std::endl;
     }
 
-    std::ofstream file(mOutputfilePath, std::ios::app);
-    if (file.is_open())
+    mFile = std::ofstream(generateTimestampPath());
+    if (mFile.is_open())
     {
-        file << "watershed_method, image_resolution, time_to_run\n";
-        file.close();
+        mFile << "watershed_method, image_resolution, time_to_run\n";
+    }
+}
+
+Controller::~Controller()
+{
+    if (mFile.is_open())
+    {
+        mFile.close();
     }
 }
 
@@ -83,10 +90,12 @@ void Controller::loadImage()
     }
     else if (result == NFD_CANCEL)
     {
+        std::cout << "Load image operation was cancelled!" << std::endl;
         return;
     }
     else
     {
+        std::cout << "Something went wrong when loading image!" << std::endl;
         return;
     }
 }
@@ -265,7 +274,7 @@ void Controller::processWinEvent(sf::RenderWindow& window, const sf::Texture& te
         if (event.type == sf::Event::Closed)
         {
             window.close();
-            if (&texture == &mAppData.getOriginalTexture())
+            if (texture.getNativeHandle() == mAppData.getOriginalTexture().getNativeHandle())
             {
                 mAppData.resetOriginalImage();
             }
@@ -280,22 +289,18 @@ void Controller::processWinEvent(sf::RenderWindow& window, const sf::Texture& te
 std::string Controller::generateTimestampPath()
 {
     auto now = std::chrono::system_clock::now();
-    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&now_time), "%Y%m%d%H%M%S");
-    return OUTPUT_DIR + "segmentation_runtime_cpp" + ss.str() + ".csv";
+    return std::format("{}/segmentation_runtime_cpp{:%Y%m%d%H%M%S}.csv",
+                       OUTPUT_DIR, now);
 }
 
 void Controller::writeTime()
 {
-    std::ofstream file(mOutputfilePath, std::ios::app);
     int rows = mAppData.getSegmentedMatrix().rows;
     int cols = mAppData.getSegmentedMatrix().cols;
-    if (file.is_open())
+    if (mFile.is_open())
     {
-        file << mWatershedMethod << ", " << cols << "x" << rows << ", "
+        mFile << mWatershedMethod << ", " << cols << "x" << rows << ", "
              << mDuration << "\n";
-        file.close();
     }
 }

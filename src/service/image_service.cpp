@@ -59,7 +59,7 @@ namespace
         return rgbaImg;
     }
 
-    std::vector<std::pair<int, int>> find_local_mins(const cv::Mat &img_mat, int max_markers)
+    std::vector<std::pair<int, int>> findLocalMins(const cv::Mat &img_mat, int max_markers)
     {
         std::vector<Pixel> candidates;
         for (int r = 1; r < img_mat.rows - 1; ++r)
@@ -97,7 +97,7 @@ namespace
 
 namespace image_service
 {
-    cv::Mat watershedSegmentation(const cv::Mat matrix,
+    cv::Mat watershedSegmentation(const cv::Mat &matrix,
                                                 const int max_markers,
                                                 const int gaussianBlurMatrixSize,
                                                 const int kernelMatrixSize)
@@ -109,7 +109,7 @@ namespace image_service
         cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_8UC1);
 
         std::vector<std::pair<int, int>> local_mins =
-            find_local_mins(preparedImg, max_markers); // TODO: Parametrize
+            findLocalMins(preparedImg, max_markers); // TODO: Parametrize
         std::priority_queue<Pixel, std::vector<Pixel>, std::greater<Pixel>> pq;
         for (int i = 0; i < local_mins.size(); ++i)
         {
@@ -161,7 +161,7 @@ namespace image_service
         return postProcessingForCustomWS(grayscaleImg, markers);
     }
 
-    cv::Mat cvWatershedSegmentation(const cv::Mat matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
+    cv::Mat cvWatershedSegmentation(const cv::Mat &matrix, const int max_markers, const int gaussianBlurMatrixSize, const int kernelMatrixSize)
     {
         // 1. Convert to Grayscale & Blur (Essential to avoid noise seeds)
         cv::Mat gray, blurred;
@@ -174,7 +174,7 @@ namespace image_service
 
         // 2. Find seeds using your local mins logic
         std::vector<std::pair<int, int>> seeds =
-            find_local_mins(gradient, max_markers);
+            findLocalMins(gradient, max_markers);
 
         // 3. Prepare the 32-bit Marker Matrix
         cv::Mat markers = cv::Mat::zeros(matrix.size(), CV_32S);
