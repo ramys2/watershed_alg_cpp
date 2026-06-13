@@ -94,6 +94,112 @@ RETURN markers, view_img
 
 ---
 
+# Instalační příručka pro C++
+
+Tato část popisuje instalaci systémových závislostí, sestavení a spuštění C++ implementace projektu.
+
+## 1. Instalace systémových závislostí
+
+Projekt obsahuje skript `install-dependacies.sh`, který instaluje balíčky potřebné pro sestavení aplikace na distribucích založených na Debianu nebo Ubuntu.
+
+Skript instaluje zejména:
+
+- základní nástroje pro překlad C++ projektu (`build-essential`, `cmake`, `git`),
+- nástroj `pkg-config`, který CMake používá pro nalezení GTK,
+- knihovnu OpenCV (`libopencv-dev`),
+- knihovnu GTK3 (`libgtk-3-dev`),
+- OpenGL vývojové balíčky (`libgl1-mesa-dev`),
+- systémové závislosti potřebné pro sestavení SFML ze zdrojových kódů.
+
+Skript lze spustit příkazem:
+
+```bash
+./install-dependacies.sh
+```
+
+Poznámka: Knihovny SFML, ImGui, ImGui-SFML a nativefiledialog nejsou instalovány jako systémové balíčky. Projekt je stahuje automaticky pomocí `FetchContent` v souboru `CMakeLists.txt`. Instalační skript proto instaluje pouze systémové balíčky, které jsou potřeba pro jejich sestavení a linkování.
+
+## 2. Sestavení projektu
+
+Pro sestavení C++ aplikace slouží skript `build.sh`.
+
+Skript provede tyto kroky:
+
+- spustí instalaci závislostí pomocí `install-dependacies.sh`,
+- vytvoří složku `build`,
+- přejde do složky `build`,
+- spustí konfiguraci projektu pomocí `cmake ..`,
+- sestaví projekt příkazem `make`,
+- přesune výsledný spustitelný soubor `watershed_app` do kořenové složky projektu.
+
+Sestavení lze spustit příkazem:
+
+```bash
+./build.sh
+```
+
+Po úspěšném sestavení je možné aplikaci spustit příkazem:
+
+```bash
+./watershed_app
+```
+
+# Instlační příručka pro Python
+
+Tato část je připravena pro doplnění instalačních kroků Python implementace.
+
+## 1. Instalace závislostí
+
+Zde bude doplněn postup instalace Python balíčků potřebných pro spuštění původní Python verze aplikace.
+
+## 2. Spuštění aplikace
+
+Zde bude doplněn příkaz pro spuštění Python implementace a případné poznámky ke konfiguraci prostředí.
+
+---
+
+# Uživatelská příručka
+
+Tato kapitola slouží jako kompletní průvodce pro instalaci, konfiguraci a následné spuštění aplikace. Detailně popisuje ovládací prvky uživatelského rozhraní a specifika navigace v obou implementacích (C++ i Python), čímž uživateli usnadňuje efektivní využití všech funkcí pro watershed segmentaci.
+
+## 1. První kroky a načtení obrazu
+
+Po spuštění aplikace (ať už v C++ nebo Pythonu) je prvním krokem načtení dat prostřednictvím ovládacího panelu:
+- **Tlačítko "Load Image":** Vyvolá systémové okno pro výběr souboru. Podporovány jsou standardní formáty (PNG, JPG, BMP).
+- **Zobrazení:** Po úspěšném načtení se otevře okno s originálním náhledem obrázku.
+
+## 2. Konfigurace parametrů segmentace
+
+Uživatelské rozhraní nabízí dvě sekce nastavení – jednu pro vlastní implementaci a druhou pro knihovnu OpenCV. Parametry můžete měnit pomocí posuvníků (sliderů) v reálném čase:
+
+|**Parametr**|**Funkce**|**Doporučení**|
+|---|---|---|
+|**Markers**|Nastavuje počet startovních bodů (semen) pro zaplavování.|Vyšší počet markerů odhalí více detailů, ale může způsobit pře-segmentaci.|
+|**Gauss Blur Kernel**|Definuje úroveň rozostření pro redukci šumu před výpočtem.|Pro zašuměné obrázky použijte vyšší hodnotu (např. 7 nebo 9).|
+|**Morphology Kernel**|Určuje velikost strukturního elementu pro výpočet hran.|Ovlivňuje robustnost detekovaných linií watershed.|
+
+## 3. Spuštění a zpracování
+
+Výpočet spustíte tlačítky **"Run Custom Watershed"** nebo **"Run OpenCV Watershed"**.
+
+**1.Výpočet na pozadí:** Asynchronní zpracování.
+
+Aplikace spustí algoritmus v samostatném vlákně. Díky tomu uživatelské rozhraní nezamrzne.
+
+**2.Zobrazení výsledků:** Nové okno se segmentací.
+
+Po dokončení se automaticky otevře okno **"Segmented Image"**. Detekované hranice jsou vykresleny kontrastní barvou na černobílém podkladu.
+
+**3.Uložení statistik:** Složka statistics.
+
+Informace o rozlišení obrazu a době trvání výpočtu jsou automaticky zapsány do CSV souboru pro pozdější analýzu výkonu.
+
+---
+
+> **Upozornění k navigaci:** Pokud během práce zavřete okno s originálním obrázkem, aplikace uvolní paměť a pro další výpočet bude nutné obrázek načíst znovu.
+
+---
+
 # Implementace
 
 V této kapitole je detailně rozebrána technická realizace obou řešení. Pozornost je věnována jak nízkoúrovňové implementaci v jazyce **C++**, tak skriptovací variantě v **Pythonu**. U obou přístupů je popsána adresářová struktura projektu, klíčové moduly a stěžejní funkce. Kapitola rovněž obsahuje přehled generovaných výstupů a způsob jejich interpretace.
@@ -220,50 +326,6 @@ V C++ implementaci slouží tento adresář ke stejnému účelu jako v Pythonu 
     - `image_resolution`: Rozlišení (např. 1920x1080).
     - `time_to_run`: Čas v sekundách.
 
----
-
-# Uživatelská příručka
-
-Tato kapitola slouží jako kompletní průvodce pro instalaci, konfiguraci a následné spuštění aplikace. Detailně popisuje ovládací prvky uživatelského rozhraní a specifika navigace v obou implementacích (C++ i Python), čímž uživateli usnadňuje efektivní využití všech funkcí pro watershed segmentaci.
-
-## 1. První kroky a načtení obrazu
-
-Po spuštění aplikace (ať už v C++ nebo Pythonu) je prvním krokem načtení dat prostřednictvím ovládacího panelu:
-- **Tlačítko "Load Image":** Vyvolá systémové okno pro výběr souboru. Podporovány jsou standardní formáty (PNG, JPG, BMP).
-- **Zobrazení:** Po úspěšném načtení se otevře okno s originálním náhledem obrázku.
-
-## 2. Konfigurace parametrů segmentace
-
-Uživatelské rozhraní nabízí dvě sekce nastavení – jednu pro vlastní implementaci a druhou pro knihovnu OpenCV. Parametry můžete měnit pomocí posuvníků (sliderů) v reálném čase:
-
-|**Parametr**|**Funkce**|**Doporučení**|
-|---|---|---|
-|**Markers**|Nastavuje počet startovních bodů (semen) pro zaplavování.|Vyšší počet markerů odhalí více detailů, ale může způsobit pře-segmentaci.|
-|**Gauss Blur Kernel**|Definuje úroveň rozostření pro redukci šumu před výpočtem.|Pro zašuměné obrázky použijte vyšší hodnotu (např. 7 nebo 9).|
-|**Morphology Kernel**|Určuje velikost strukturního elementu pro výpočet hran.|Ovlivňuje robustnost detekovaných linií watershed.|
-
-## 3. Spuštění a zpracování
-
-Výpočet spustíte tlačítky **"Run Custom Watershed"** nebo **"Run OpenCV Watershed"**.
-
-**1.Výpočet na pozadí:** Asynchronní zpracování.
-
-Aplikace spustí algoritmus v samostatném vlákně. Díky tomu uživatelské rozhraní nezamrzne.
-
-**2.Zobrazení výsledků:** Nové okno se segmentací.
-
-Po dokončení se automaticky otevře okno **"Segmented Image"**. Detekované hranice jsou vykresleny kontrastní barvou na černobílém podkladu.
-
-**3.Uložení statistik:** Složka statistics.
-
-Informace o rozlišení obrazu a době trvání výpočtu jsou automaticky zapsány do CSV souboru pro pozdější analýzu výkonu.
-
----
-
-> **Upozornění k navigaci:** Pokud během práce zavřete okno s originálním obrázkem, aplikace uvolní paměť a pro další výpočet bude nutné obrázek načíst znovu.
-
----
-
 # Analýza a vyhodnocení výsledků
 
 V této kapitole jsou analyzovány výsledky segmentace obrazu získané pomocí dvou přístupů – vlastní implementace Meyerova watershed algoritmu a knihovní funkce z OpenCV. Obě varianty využívají shodné předzpracování obrazu a zároveň společnou ručně implementovanou funkci pro detekci lokálních minim, která slouží jako jednotný základ pro inicializaci markerů. Jak již bylo uvedeno v úvodu dokumentace, všechny funkce byly implementovány jak v jazyce C++, tak i v Pythonu, což umožňuje ověřit konzistenci výsledků napříč oběma implementačními prostředími. Díky tomuto přístupu je možné objektivně porovnat samotné chování a výsledky obou implementací při zachování stejného vstupního základu.
@@ -315,67 +377,3 @@ Praktické testování na různých rozlišeních, od standardního 640×480 až
 4. **Optimalizace knihovny OpenCV:** Srovnání ukázalo, že pro produkční nasazení je knihovní funkce `opencv_watershed` nepřekonatelná díky hlubokým optimalizacím. Vlastní implementace Meyerova algoritmu v C++ však posloužila jako vynikající nástroj pro pochopení vnitřních mechanismů segmentace a jako důkaz, že i ručně psaný kód v nízkoúrovňovém jazyce může být velmi efektivní.
 
 Závěrem lze konstatovat, že stanovené cíle práce byly splněny. Implementace v C++ nejenže zajistila plynulý chod aplikace a rychlejší výpočty, ale také umožnila efektivní zpracování obrazových dat ve vysokém rozlišení, které bylo v původním prostředí Python prakticky nerealizovatelné.
-
----
-
-# Instalační příručka pro C++
-
-Tato část popisuje instalaci systémových závislostí, sestavení a spuštění C++ implementace projektu.
-
-## 1. Instalace systémových závislostí
-
-Projekt obsahuje skript `install-dependacies.sh`, který instaluje balíčky potřebné pro sestavení aplikace na distribucích založených na Debianu nebo Ubuntu.
-
-Skript instaluje zejména:
-
-- základní nástroje pro překlad C++ projektu (`build-essential`, `cmake`, `git`),
-- nástroj `pkg-config`, který CMake používá pro nalezení GTK,
-- knihovnu OpenCV (`libopencv-dev`),
-- knihovnu GTK3 (`libgtk-3-dev`),
-- OpenGL vývojové balíčky (`libgl1-mesa-dev`),
-- systémové závislosti potřebné pro sestavení SFML ze zdrojových kódů.
-
-Skript lze spustit příkazem:
-
-```bash
-./install-dependacies.sh
-```
-
-Poznámka: Knihovny SFML, ImGui, ImGui-SFML a nativefiledialog nejsou instalovány jako systémové balíčky. Projekt je stahuje automaticky pomocí `FetchContent` v souboru `CMakeLists.txt`. Instalační skript proto instaluje pouze systémové balíčky, které jsou potřeba pro jejich sestavení a linkování.
-
-## 2. Sestavení projektu
-
-Pro sestavení C++ aplikace slouží skript `build.sh`.
-
-Skript provede tyto kroky:
-
-- spustí instalaci závislostí pomocí `install-dependacies.sh`,
-- vytvoří složku `build`,
-- přejde do složky `build`,
-- spustí konfiguraci projektu pomocí `cmake ..`,
-- sestaví projekt příkazem `make`,
-- přesune výsledný spustitelný soubor `watershed_app` do kořenové složky projektu.
-
-Sestavení lze spustit příkazem:
-
-```bash
-./build.sh
-```
-
-Po úspěšném sestavení je možné aplikaci spustit příkazem:
-
-```bash
-./watershed_app
-```
-
-# Instlační příručka pro Python
-
-Tato část je připravena pro doplnění instalačních kroků Python implementace.
-
-## 1. Instalace závislostí
-
-Zde bude doplněn postup instalace Python balíčků potřebných pro spuštění původní Python verze aplikace.
-
-## 2. Spuštění aplikace
-
-Zde bude doplněn příkaz pro spuštění Python implementace a případné poznámky ke konfiguraci prostředí.
