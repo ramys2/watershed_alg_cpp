@@ -315,3 +315,67 @@ Praktické testování na různých rozlišeních, od standardního 640×480 až
 4. **Optimalizace knihovny OpenCV:** Srovnání ukázalo, že pro produkční nasazení je knihovní funkce `opencv_watershed` nepřekonatelná díky hlubokým optimalizacím. Vlastní implementace Meyerova algoritmu v C++ však posloužila jako vynikající nástroj pro pochopení vnitřních mechanismů segmentace a jako důkaz, že i ručně psaný kód v nízkoúrovňovém jazyce může být velmi efektivní.
 
 Závěrem lze konstatovat, že stanovené cíle práce byly splněny. Implementace v C++ nejenže zajistila plynulý chod aplikace a rychlejší výpočty, ale také umožnila efektivní zpracování obrazových dat ve vysokém rozlišení, které bylo v původním prostředí Python prakticky nerealizovatelné.
+
+---
+
+# Instalační příručka pro C++
+
+Tato část popisuje instalaci systémových závislostí, sestavení a spuštění C++ implementace projektu.
+
+## 1. Instalace systémových závislostí
+
+Projekt obsahuje skript `install-dependacies.sh`, který instaluje balíčky potřebné pro sestavení aplikace na distribucích založených na Debianu nebo Ubuntu.
+
+Skript instaluje zejména:
+
+- základní nástroje pro překlad C++ projektu (`build-essential`, `cmake`, `git`),
+- nástroj `pkg-config`, který CMake používá pro nalezení GTK,
+- knihovnu OpenCV (`libopencv-dev`),
+- knihovnu GTK3 (`libgtk-3-dev`),
+- OpenGL vývojové balíčky (`libgl1-mesa-dev`),
+- systémové závislosti potřebné pro sestavení SFML ze zdrojových kódů.
+
+Skript lze spustit příkazem:
+
+```bash
+./install-dependacies.sh
+```
+
+Poznámka: Knihovny SFML, ImGui, ImGui-SFML a nativefiledialog nejsou instalovány jako systémové balíčky. Projekt je stahuje automaticky pomocí `FetchContent` v souboru `CMakeLists.txt`. Instalační skript proto instaluje pouze systémové balíčky, které jsou potřeba pro jejich sestavení a linkování.
+
+## 2. Sestavení projektu
+
+Pro sestavení C++ aplikace slouží skript `build.sh`.
+
+Skript provede tyto kroky:
+
+- spustí instalaci závislostí pomocí `install-dependacies.sh`,
+- vytvoří složku `build`,
+- přejde do složky `build`,
+- spustí konfiguraci projektu pomocí `cmake ..`,
+- sestaví projekt příkazem `make`,
+- přesune výsledný spustitelný soubor `watershed_app` do kořenové složky projektu.
+
+Sestavení lze spustit příkazem:
+
+```bash
+./build.sh
+```
+
+Po úspěšném sestavení je možné aplikaci spustit příkazem:
+
+```bash
+./watershed_app
+```
+
+# Instlační příručka pro Python
+
+Tato část je připravena pro doplnění instalačních kroků Python implementace.
+
+## 1. Instalace závislostí
+
+Zde bude doplněn postup instalace Python balíčků potřebných pro spuštění původní Python verze aplikace.
+
+## 2. Spuštění aplikace
+
+Zde bude doplněn příkaz pro spuštění Python implementace a případné poznámky ke konfiguraci prostředí.
