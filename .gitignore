@@ -1,5 +1,8 @@
 .cache/
 .zed/
+.vscode/
 build/
+statistics/
 MVC_Sum.md
-.vscode
+watershed_app
+imgui.ini
