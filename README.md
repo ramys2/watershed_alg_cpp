@@ -146,15 +146,43 @@ Po úspěšném sestavení je možné aplikaci spustit příkazem:
 
 # Instlační příručka pro Python
 
-Tato část je připravena pro doplnění instalačních kroků Python implementace.
+Tato část popisuje instalaci systémových závislostí, vytvoření virtuálního prostředí a instalaci Python balíčků potřebných pro spuštění původní Python implementace projektu.
 
 ## 1. Instalace závislostí
 
-Zde bude doplněn postup instalace Python balíčků potřebných pro spuštění původní Python verze aplikace.
+Nejprve je potřeba nainstalovat systémovou závislost pro knihovnu `tkinter`, která se používá pro výběr souborů v grafickém rozhraní:
+
+```bash
+sudo apt install python3-tk
+```
+
+V kořenové složce projektu vytvořte Python virtuální prostředí:
+
+```bash
+python3 -m venv .
+```
+
+Poté virtuální prostředí aktivujte:
+
+```bash
+source bin/activate
+```
+
+Poznámka: Tento příkaz platí pro shell `bash`. Pokud používáte jiný shell, je potřeba zvolit odpovídající aktivační skript pro daný shell.
+
+Po aktivaci virtuálního prostředí nainstalujte všechny potřebné Python balíčky ze souboru `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
 
 ## 2. Spuštění aplikace
 
-Zde bude doplněn příkaz pro spuštění Python implementace a případné poznámky ke konfiguraci prostředí.
+Po dokončení instalace a aktivaci virtuálního prostředí lze Python implementaci spustit příkazem:
+
+```bash
+python src/main.py
+```
 
 ---
 
